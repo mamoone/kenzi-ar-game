@@ -264,8 +264,9 @@ class TreasureHuntGame {
                 // 🎯 CONTENU AR 3D - Position face à la caméra
                 const arContainer = document.createElement('a-entity');
                 arContainer.setAttribute('id', `ar-container-${question.markerId}`);
-                arContainer.setAttribute('position', '0 0.3 -0.8');
+                arContainer.setAttribute('position', '0 0 -1.2');
                 arContainer.setAttribute('look-at', '[camera]');
+                arContainer.setAttribute('rotation', '0 0 0');
                 
                 // ✨ Particules magiques - Plus nombreuses et variées
                 for (let i = 0; i < 20; i++) {
@@ -426,7 +427,7 @@ class TreasureHuntGame {
                 const buttonColors = ['#FF6B9D', '#6BCF7F', '#FFD93D', '#4D96FF'];
                 
                 question.answers.forEach((answer, index) => {
-                    const yPos = -0.5 - (index * 0.45);
+                    const yPos = -0.6 - (index * 0.4);
                     
                     // Bordure blanche - PLUS GRANDE
                     const btnBorder = document.createElement('a-plane');
@@ -552,22 +553,47 @@ class TreasureHuntGame {
         `;
         
         // Créer zones cliquables pour chaque bouton
-        // Ajustement pour correspondre aux boutons AR
-        const buttonPositions = [55, 63, 71, 79];
+        // Ajustement responsive selon taille écran
+        const screenWidth = window.innerWidth;
+        let buttonPositions;
+        
+        if (screenWidth >= 768 && screenWidth <= 1024) {
+            // Tablettes
+            buttonPositions = [52, 60, 68, 76];
+        } else if (screenWidth > 1024) {
+            // Desktop
+            buttonPositions = [50, 58, 66, 74];
+        } else {
+            // Mobile
+            buttonPositions = [55, 63, 71, 79];
+        }
         
         question.answers.forEach((answer, index) => {
             const clickZone = document.createElement('div');
-            clickZone.style.cssText = `
-                position: absolute;
-                left: 50%;
-                top: ${buttonPositions[index]}%;
-                transform: translateX(-50%);
-                width: 85%;
-                max-width: 450px;
-                height: 11%;
-                pointer-events: auto;
-                cursor: pointer;
-            `;
+            let maxWidth, height;
+                
+                if (screenWidth >= 768 && screenWidth <= 1024) {
+                    maxWidth = '600px';
+                    height = '10%';
+                } else if (screenWidth > 1024) {
+                    maxWidth = '500px';
+                    height = '9%';
+                } else {
+                    maxWidth = '450px';
+                    height = '11%';
+                }
+                
+                clickZone.style.cssText = `
+                    position: absolute;
+                    left: 50%;
+                    top: ${buttonPositions[index]}%;
+                    transform: translateX(-50%);
+                    width: 85%;
+                    max-width: ${maxWidth};
+                    height: ${height};
+                    pointer-events: auto;
+                    cursor: pointer;
+                `;
             
             clickZone.addEventListener('click', () => {
                 console.log('🎯 Zone cliquée:', answer);

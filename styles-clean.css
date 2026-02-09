@@ -7,6 +7,235 @@
    0. ANIMATIONS DE FOND
    ============================================ */
 
+/* ============================================
+   0.1 MEDIA QUERIES - TABLETTE
+   ============================================ */
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    /* Page d'accueil pour tablette */
+    #welcome-screen .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    #welcome-screen h1 {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    #welcome-screen .kenzi-character {
+        position: static;
+        transform: none;
+        margin: 0 auto 2rem;
+        max-width: 400px;
+        padding: 1.5rem;
+    }
+    
+    #welcome-screen .kenzi-avatar {
+        font-size: 60px;
+    }
+    
+    #welcome-screen .kenzi-speech-bubble {
+        font-size: 1.1rem;
+    }
+    
+    #student-name {
+        font-size: 1.2rem;
+        padding: 1rem 1.5rem;
+        max-width: 500px;
+        margin: 0 auto 1.5rem;
+    }
+    
+    .btn {
+        font-size: 1.2rem;
+        padding: 1rem 2rem;
+        max-width: 400px;
+        margin: 0.75rem auto;
+    }
+    
+    /* Score panel pour tablette */
+    #game-ui {
+        padding: 1rem 1.5rem;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 0 0 20px 20px;
+    }
+    
+    #score-panel {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+        align-items: stretch;
+    }
+    
+    .score-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+    }
+    
+    .score-row:first-child {
+        grid-template-columns: 1fr;
+    }
+    
+    #player-name {
+        grid-column: 1 / -1;
+        padding: 0.8rem 1rem;
+        font-size: 1rem;
+        border-radius: 12px;
+        text-align: center;
+    }
+    
+    #score, #progress {
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+        border-radius: 12px;
+        text-align: center;
+    }
+    
+    #exit-game {
+        grid-column: 1 / -1;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        max-width: 250px;
+        justify-self: center;
+    }
+    
+    /* Kenzi pour tablette - pendant le jeu */
+    #kenzi-game-character {
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 90;
+        background: linear-gradient(135deg, #FFE5B4 0%, #FFF9E6 100%) !important;
+        padding: 1rem 1.5rem !important;
+        border-radius: 25px !important;
+        box-shadow: 0 10px 0 rgba(255,217,61,0.4), 0 20px 30px rgba(0,0,0,0.2) !important;
+        border: 4px solid #FFD93D !important;
+        max-width: 350px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 1rem !important;
+        flex-direction: row !important;
+    }
+    
+    .kenzi-avatar-game {
+        font-size: 45px !important;
+        margin: 0 !important;
+        flex-shrink: 0;
+    }
+    
+    #kenzi-speech {
+        position: static !important;
+        background: white !important;
+        padding: 0.8rem 1rem !important;
+        margin: 0 !important;
+        border: 2px solid #FFD93D !important;
+        border-radius: 15px !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+        font-size: 0.95rem !important;
+        color: #333 !important;
+        text-align: center !important;
+        flex: 1;
+        font-weight: 600;
+    }
+    
+    #kenzi-speech::before {
+        display: none !important;
+    }
+    
+    /* Instructions pour tablette */
+    .instructions-box {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+    
+    .instruction-step {
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* AR overlay pour tablette - zones cliquables plus grandes */
+    #ar-click-overlay {
+        z-index: 50 !important;
+    }
+    
+    /* Victory screen pour tablette */
+    #victory-screen > div {
+        max-width: 600px;
+        padding: 3rem;
+    }
+}
+
+@media (min-width: 1025px) {
+    /* Page d'accueil pour desktop */
+    #welcome-screen .container {
+        max-width: 700px;
+        padding: 3rem;
+    }
+    
+    #welcome-screen h1 {
+        font-size: 3rem;
+    }
+    
+    #welcome-screen .kenzi-character {
+        max-width: 500px;
+        padding: 2rem;
+    }
+    
+    /* Desktop - score panel en haut centré */
+    #game-ui {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: 700px;
+        border-radius: 20px;
+        padding: 1.2rem 2.5rem;
+        z-index: 100;
+    }
+    
+    #score-panel {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 1.5rem;
+        align-items: center;
+    }
+    
+    .score-row {
+        display: contents;
+    }
+    
+    #player-name, #score, #progress {
+        text-align: center;
+        padding: 0.8rem 1.2rem;
+        font-size: 1rem;
+    }
+    
+    #exit-game {
+        grid-column: 1 / -1;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        max-width: 200px;
+        justify-self: center;
+    }
+    
+    /* Kenzi pour desktop */
+    #kenzi-game-character {
+        position: fixed !important;
+        bottom: 30px !important;
+        left: 30px !important;
+        transform: none !important;
+        max-width: 250px !important;
+    }
+}
+
 .animated-background {
     position: fixed;
     top: 0;
@@ -332,18 +561,17 @@ textarea.form-control {
 
 input[type="text"] {
     width: 100%;
-    max-width: 450px;
-    padding: 1.5rem 2rem;
-    font-size: 1.4rem;
-    border: 6px solid white;
-    border-radius: 35px;
-    margin-bottom: 1.5rem;
+    max-width: 400px;
+    padding: 0.9rem 1.2rem;
+    font-size: 1.1rem;
+    border: 3px solid #FFD93D;
+    border-radius: 12px;
+    margin: 0 auto 1.2rem;
     text-align: center;
+    direction: rtl;
     background: white;
-    color: #FF6B9D;
-    font-weight: 900;
-    transition: all 0.3s;
-    box-shadow: 0 8px 0 rgba(255,217,61,0.3), 0 12px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: block;
 }
 
 input[type="text"]:focus {
@@ -358,25 +586,23 @@ input[type="text"]:focus {
    ============================================ */
 
 .btn {
-    display: inline-block;
-    padding: 1.5rem 3rem;
-    font-size: 1.4rem;
-    border: 6px solid white;
-    border-radius: 50px;
+    padding: 0.9rem 1.8rem;
+    font-size: 1.1rem;
+    border: 3px solid;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: 900;
     transition: all 0.3s;
-    box-shadow: 0 12px 0 rgba(0,0,0,0.2), 0 15px 40px rgba(0,0,0,0.3);
-    margin: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    position: relative;
-    transform: translateY(0);
+    font-weight: 700;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto 1rem;
+    display: block;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.15);
 }
 
 .btn:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 0 rgba(0,0,0,0.2), 0 20px 50px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn:active {
@@ -390,9 +616,9 @@ input[type="text"]:focus {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #6BCF7F 0%, #4D96FF 100%);
+    background: linear-gradient(135deg, #6BCF7F 0%, #4CAF50 100%);
     color: white;
-    animation: btnPulse 2s ease-in-out infinite;
+    border-color: #45a049;
 }
 
 @keyframes btnPulse {
@@ -401,8 +627,9 @@ input[type="text"]:focus {
 }
 
 .btn-secondary {
-    background: linear-gradient(135deg, #FFD93D 0%, #FFA07A 100%);
+    background: linear-gradient(135deg, #4D96FF 0%, #2979FF 100%);
     color: white;
+    border-color: #1976D2;
 }
 
 .btn-danger {
@@ -531,18 +758,16 @@ input[type="text"]:focus {
 }
 
 .kenzi-character {
-    position: fixed !important;
-    bottom: 10px !important;
-    left: 10px !important;
-    z-index: 90;
-    animation: none;
-    transform: none !important;
-    background: transparent !important;
-    padding: 0.3rem;
-    border-radius: 15px;
-    box-shadow: 0 3px 0 rgba(255,217,61,0.3), 0 5px 10px rgba(0,0,0,0.1);
-    border: 2px solid #FFD93D;
-    max-width: 150px;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #FFE5B4 0%, #FFF9E6 100%);
+    padding: 1rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 0 rgba(255,217,61,0.3), 0 15px 25px rgba(0,0,0,0.15);
+    border: 3px solid #FFD93D;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .kenzi-character::before {
@@ -559,10 +784,8 @@ input[type="text"]:focus {
 }
 
 .kenzi-avatar {
-    font-size: 25px;
-    animation: bounce 2s ease-in-out infinite;
-    filter: drop-shadow(0 3px 6px rgba(255, 107, 157, 0.3));
-    display: inline-block;
+    font-size: 50px;
+    margin-bottom: 0.5rem;
 }
 
 @keyframes float {
@@ -571,35 +794,32 @@ input[type="text"]:focus {
 }
 
 .kenzi-speech-bubble {
-    background: linear-gradient(135deg, #FFD93D 0%, #FFA07A 100%);
-    color: white;
-    padding: 0.3rem 0.5rem;
-    border-radius: 10px;
-    margin-top: 0.3rem;
-    box-shadow: 0 2px 0 rgba(255,160,122,0.3), 0 3px 8px rgba(255, 217, 61, 0.2);
+    background: white;
+    padding: 0.8rem 1rem;
+    border-radius: 15px;
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    font-size: 0.9rem;
+    border: 2px solid #FFD93D;
     position: relative;
+    color: #333;
     font-weight: 600;
-    font-size: 0.65rem;
-    border: 2px solid white;
-    text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
-    animation: none;
+    line-height: 1.4;
 }
 
-@keyframes bubbleWiggle {
-    0%, 100% { transform: rotate(-1deg); }
-    50% { transform: rotate(1deg); }
-}
-
-.kenzi-speech-bubble::before {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 10px;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid #FFA07A;
+#student-name {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.9rem 1.2rem;
+    font-size: 1.1rem;
+    border: 3px solid #FFD93D;
+    border-radius: 12px;
+    margin: 0 auto 1.2rem;
+    text-align: center;
+    direction: rtl;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: block;
 }
 
 /* ============================================
@@ -630,10 +850,20 @@ input[type="text"]:focus {
 
 #score-panel {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
     gap: 0.5rem;
-    align-items: center;
+    align-items: stretch;
     position: relative;
+}
+
+.score-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.score-row:first-child {
+    grid-template-columns: 1fr;
 }
 
 .score-row {
@@ -644,17 +874,15 @@ input[type="text"]:focus {
 }
 
 #player-name {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     background: #FFD93D;
-    padding: 0.3rem 0.6rem;
+    border: 2px solid #FFC107;
+    padding: 0.4rem 0.8rem;
     border-radius: 12px;
-    border: 2px solid #FFA500;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: #333;
     font-weight: 700;
     text-align: center;
+    grid-column: 1 / -1;
 }
 
 #score {
@@ -854,7 +1082,7 @@ input[type="text"]:focus {
 }
 
 .instruction-step {
-    background: linear-gradient(135deg, #F0F9FF 0%, #FFF9E6 100%);
+    background: linear-gradient(135deg, #F0F9FF 0%, #FFFFFF 100%);
     padding: 1rem;
     border-radius: 20px;
     margin-bottom: 1rem;
@@ -991,43 +1219,44 @@ input[type="text"]:focus {
    ============================================ */
 
 #kenzi-game-character {
-    position: fixed;
-    bottom: 30px;
-    left: 30px;
-    z-index: 150;
-    background: white;
-    padding: 20px;
-    border-radius: 50%;
-    border: 8px solid #FFD93D;
-    box-shadow: 0 8px 0 rgba(255,217,61,0.6), 0 15px 50px rgba(255, 217, 61, 0.7);
-    animation: kenziFloat 3s ease-in-out infinite;
-}
-
-@keyframes kenziFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
+    position: fixed !important;
+    bottom: 10px !important;
+    left: 10px !important;
+    z-index: 90;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    background: linear-gradient(135deg, #FFE5B4 0%, #FFF9E6 100%) !important;
+    padding: 0.6rem 0.8rem !important;
+    border-radius: 18px !important;
+    box-shadow: 0 6px 0 rgba(255,217,61,0.4), 0 12px 20px rgba(0,0,0,0.15) !important;
+    border: 3px solid #FFD93D !important;
+    max-width: 220px !important;
+    transform: none !important;
+    flex-direction: row !important;
 }
 
 .kenzi-avatar-game {
-    font-size: 100px;
-    animation: bounce 2s ease-in-out infinite;
-    filter: drop-shadow(0 8px 20px rgba(255, 107, 157, 0.6));
-    cursor: pointer;
-    display: inline-block;
+    font-size: 30px !important;
+    flex-shrink: 0;
+    margin: 0 !important;
 }
 
-.kenzi-speech {
-    background: linear-gradient(135deg, #FF6B9D 0%, #FFD93D 100%);
-    border: 6px solid white;
-    border-radius: 30px;
-    padding: 1.3rem 1.8rem;
-    margin-top: 1rem;
-    max-width: 320px;
-    box-shadow: 0 6px 0 rgba(255,107,157,0.5), 0 12px 40px rgba(255, 107, 157, 0.7);
-    font-weight: 900;
-    color: white;
-    font-size: 1.25rem;
-    text-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+#kenzi-speech {
+    position: static !important;
+    background: white !important;
+    padding: 0.5rem 0.7rem !important;
+    margin: 0 !important;
+    border: 2px solid #FFD93D !important;
+    border-radius: 12px !important;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1) !important;
+    font-size: 0.75rem !important;
+    color: #333 !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    text-align: center !important;
+    flex: 1;
+    text-shadow: none !important;
     animation: popIn 0.5s ease-out;
 }
 
