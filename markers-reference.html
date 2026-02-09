@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Référence des Markers AR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .markers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .marker-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .marker-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .marker-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .marker-placeholder {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+            background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0),
+                        linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            border: 3px solid #667eea;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .marker-status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-ready {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .instructions {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .instructions h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 2;
+        }
+
+        .instructions a {
+            color: #667eea;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .instructions a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-generate {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+
+        .btn-generate:hover {
+            background: #5568d3;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .marker-card {
+                break-inside: avoid;
+            }
+            .btn-generate {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📍 Référence des Markers AR</h1>
+        <p>Guide visuel pour la Chasse au Trésor en Réalité Augmentée</p>
+    </div>
+
+    <div class="info-box">
+        <h3>⚠️ Important</h3>
+        <p>
+            Cette page est une référence visuelle. Pour générer les vrais markers AR, 
+            utilisez les liens ci-dessous. Chaque marker doit être imprimé en noir et blanc 
+            avec une bordure blanche de 2-3 cm.
+        </p>
+    </div>
+
+    <div class="instructions">
+        <h2>🖨️ Comment Générer les Markers</h2>
+        <ol>
+            <li>Visitez le générateur de markers en ligne</li>
+            <li>Sélectionnez le type "Barcode"</li>
+            <li>Entrez le numéro du marker (0, 1, 2, etc.)</li>
+            <li>Téléchargez l'image PNG</li>
+            <li>Imprimez en format A5 (recommandé)</li>
+            <li>Plastifiez pour plus de durabilité</li>
+        </ol>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="https://au.gmented.com/app/marker/marker.php" target="_blank" class="btn-generate">
+                🔗 Générateur de Markers AR.js
+            </a>
+            <a href="https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html" target="_blank" class="btn-generate">
+                🔗 Générateur Alternatif
+            </a>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h2>📋 Markers Disponibles (0-63)</h2>
+        <p style="margin-bottom: 15px;">
+            Voici les 20 premiers markers. Vous pouvez générer jusqu'à 64 markers (0-63) au total.
+        </p>
+    </div>
+
+    <div class="markers-grid" id="markers-container">
+        <!-- Les markers seront générés par JavaScript -->
+    </div>
+
+    <div class="instructions">
+        <h2>💡 Conseils d'Utilisation</h2>
+        <ul style="margin-left: 20px; line-height: 2;">
+            <li><strong>Qualité d'impression:</strong> Utilisez une imprimante laser pour un meilleur contraste</li>
+            <li><strong>Format:</strong> A5 (14.8 × 21 cm) est idéal pour la classe</li>
+            <li><strong>Bordure:</strong> Laissez 2-3 cm de blanc autour du marker</li>
+            <li><strong>Plastification:</strong> Fortement recommandée pour la durabilité</li>
+            <li><strong>Éclairage:</strong> Assurez-vous d'avoir un bon éclairage lors de l'utilisation</li>
+            <li><strong>Distance:</strong> Tenez le marker à 20-30 cm de la caméra</li>
+        </ul>
+    </div>
+
+    <script>
+        // Générer les cartes de markers
+        const container = document.getElementById('markers-container');
+        const defaultQuestions = [
+            { id: 0, question: "Combien font 5 + 3 ?", status: "ready" },
+            { id: 1, question: "Capitale de la France ?", status: "ready" },
+            { id: 2, question: "Combien font 12 - 7 ?", status: "ready" },
+            { id: 3, question: "Animal qui dit 'Miaou' ?", status: "ready" }
+        ];
+
+        // Charger les questions depuis localStorage si disponible
+        let questions = defaultQuestions;
+        try {
+            const stored = localStorage.getItem('treasureHuntQuestions');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                questions = parsed.map(q => ({
+                    id: q.markerId,
+                    question: q.question,
+                    status: "ready"
+                }));
+            }
+        } catch (e) {
+            console.log('Utilisation des questions par défaut');
+        }
+
+        // Créer un Set des markers utilisés
+        const usedMarkers = new Set(questions.map(q => q.id));
+
+        // Générer 20 cartes de markers
+        for (let i = 0; i < 20; i++) {
+            const card = document.createElement('div');
+            card.className = 'marker-card';
+            
+            const isUsed = usedMarkers.has(i);
+            const question = questions.find(q => q.id === i);
+            
+            card.innerHTML = `
+                <div class="marker-number">Marker #${i}</div>
+                <div class="marker-placeholder">${i}</div>
+                <div class="marker-status ${isUsed ? 'status-ready' : 'status-pending'}">
+                    ${isUsed ? '✅ Configuré' : '⏳ À configurer'}
+                </div>
+                ${question ? `<p style="margin-top: 10px; font-size: 12px; color: #666;">${question.question}</p>` : ''}
+            `;
+            
+            container.appendChild(card);
+        }
+
+        // Ajouter un message pour les markers supplémentaires
+        const moreInfo = document.createElement('div');
+        moreInfo.style.gridColumn = '1 / -1';
+        moreInfo.style.textAlign = 'center';
+        moreInfo.style.padding = '20px';
+        moreInfo.style.background = 'white';
+        moreInfo.style.borderRadius = '10px';
+        moreInfo.innerHTML = `
+            <h3 style="color: #667eea; margin-bottom: 10px;">Plus de Markers Disponibles</h3>
+            <p>Vous pouvez utiliser les markers de 20 à 63 pour plus de questions!</p>
+        `;
+        container.appendChild(moreInfo);
+    </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - مغامرة كنزي</title>
+    <link rel="stylesheet" href="styles-clean.css">
+</head>
+<body>
+    <div id="admin-screen" class="screen active">
+        <div class="admin-wrapper">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>⚙️ لوحة التحكم</h1>
+                <button id="back-to-game" class="btn btn-secondary">🎮 العودة للعبة</button>
+            </div>
+
+            <div class="admin-section">
+                <h2 class="admin-section-title">📝 الأسئلة الموجودة</h2>
+                <div id="questions-list" class="questions-list"></div>
+            </div>
+
+            <div class="admin-section">
+                <h2 class="admin-section-title">➕ إضافة/تعديل سؤال</h2>
+                <div class="kenzi-admin-mascot">
+                    <span class="kenzi-emoji">🦊</span>
+                    <p>كنزي يقول: جميع الأسئلة من نوع اختيار متعدد!</p>
+                </div>
+                <form id="question-form">
+                    <input type="hidden" id="edit-id">
+                    
+                    <div class="form-group">
+                        <label for="marker-id" class="form-label">🎯 رقم العلامة (0-63)</label>
+                        <input type="number" id="marker-id" min="0" max="63" required class="form-control">
+                        <small class="form-text">اربط كل سؤال برقم علامة فريد</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="question-input" class="form-label">❓ السؤال</label>
+                        <textarea id="question-input" rows="3" required placeholder="مثال: كم يساوي 5 + 3 ؟" class="form-control"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">📋 الإجابات (على الأقل 2)</label>
+                        <div id="answers-inputs">
+                            <div class="answer-row">
+                                <input type="text" class="answer-input form-control" placeholder="الإجابة 1" required>
+                                <button type="button" class="remove-answer" style="display:none;">❌</button>
+                            </div>
+                            <div class="answer-row">
+                                <input type="text" class="answer-input form-control" placeholder="الإجابة 2" required>
+                                <button type="button" class="remove-answer" style="display:none;">❌</button>
+                            </div>
+                        </div>
+                        <button type="button" id="add-answer" class="btn btn-secondary" style="margin-top: 10px;">➕ إضافة إجابة</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="correct-answer" class="form-label">✅ الإجابة الصحيحة</label>
+                        <input type="text" id="correct-answer" required placeholder="مثال: 8" class="form-control">
+                        <small class="form-text">أدخل النص الدقيق للإجابة الصحيحة (يجب أن يطابق أحد الخيارات)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="points" class="form-label">⭐ النقاط</label>
+                        <input type="number" id="points" value="10" min="1" max="100" required class="form-control">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">💾 حفظ</button>
+                        <button type="button" id="cancel-edit" class="btn btn-secondary">❌ إلغاء</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="admin-section">
+                <h2 class="admin-section-title">🎯 توليد العلامات</h2>
+                <p>يمكنك استخدام أكواد QR أو علامات AR (0-63)</p>
+                <div class="markers-info">
+                    <h3>الخيار 1: أكواد QR مخصصة</h3>
+                    <p>أنشئ أكواد QR خاصة بك مع صور:</p>
+                    <ul>
+                        <li>استخدم مولد QR عبر الإنترنت</li>
+                        <li>أضف صورة أو شعار في المنتصف</li>
+                        <li>اطبع واربط الرقم بسؤالك</li>
+                    </ul>
+                    
+                    <h3>الخيار 2: علامات AR.js</h3>
+                    <p>لتوليد علامات AR التقليدية:</p>
+                    <a href="https://au.gmented.com/app/marker/marker.php" target="_blank" class="btn btn-link">
+                        🔗 مولد علامات AR.js
+                    </a>
+                    <p class="info-text">
+                        اختر "Barcode" وولّد العلامات بالأرقام التي خصصتها للأسئلة.
+                    </p>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h2 class="admin-section-title">💾 إدارة البيانات</h2>
+                <div class="data-actions">
+                    <button id="export-data" class="btn btn-primary">📤 تصدير البيانات</button>
+                    <button id="import-data" class="btn btn-primary">📥 استيراد البيانات</button>
+                    <button id="reset-data" class="btn btn-danger">🗑️ حذف الكل</button>
+                </div>
+                <input type="file" id="import-file" accept=".json" style="display: none;">
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

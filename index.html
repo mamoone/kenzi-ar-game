@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مغامرة كنزي - لعبة الكنز بالواقع المعزز</title>
+    <link rel="stylesheet" href="styles-clean.css">
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
+    <script src="https://unpkg.com/aframe-text-geometry-component@0.5.1/dist/aframe-text-geometry-component.min.js"></script>
+</head>
+<body>
+    <!-- Animations de fond -->
+    <div class="animated-background">
+        <div class="sky-layer">
+            <div class="cloud cloud-1">☁️</div>
+            <div class="cloud cloud-2">☁️</div>
+        </div>
+    </div>
+    
+    <!-- Musique d'aventure en arrière-plan -->
+    <audio id="background-music" loop>
+        <!-- Utilisation de sons synthétisés via Web Audio API dans game.js -->
+    </audio>
+    
+    <div id="welcome-screen" class="screen active">
+        <div class="container">
+            <div class="kenzi-character" id="kenzi-welcome">
+                <div class="kenzi-avatar">🦊</div>
+                <div class="kenzi-speech-bubble">
+                    <p>مرحباً! أنا كنزي! 🎉</p>
+                    <p>اكتب اسمك ولنبدأ المغامرة!</p>
+                </div>
+            </div>
+            <h1>🎮 مغامرة البحث عن الكنز</h1>
+            <input type="text" id="student-name" placeholder="اكتب اسمك هنا" maxlength="20">
+            <button id="start-game" class="btn btn-primary">🚀 ابدأ المغامرة</button>
+            <button id="admin-btn" class="btn btn-secondary">⚙️ لوحة التحكم</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div id="game-ui">
+            <div id="score-panel">
+                <div class="score-row">
+                    <div id="player-name"></div>
+                </div>
+                <div class="score-row">
+                    <div id="score">النقاط: 0</div>
+                    <div id="progress">0/0</div>
+                </div>
+                <button id="exit-game">خروج</button>
+            </div>
+        </div>
+
+        <div id="ar-container">
+            <a-scene 
+                embedded 
+                arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+                vr-mode-ui="enabled: false"
+                renderer="logarithmicDepthBuffer: true; precision: medium;">
+                
+                <a-assets>
+                    <img id="trophy-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='50' font-size='50'%3E🏆%3C/text%3E%3C/svg%3E">
+                    <img id="star-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='50' font-size='50'%3E⭐%3C/text%3E%3C/svg%3E">
+                </a-assets>
+
+                <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+            </a-scene>
+        </div>
+
+        <div id="kenzi-game-character">
+            <div class="kenzi-avatar-game">🦊</div>
+            <div class="kenzi-speech" id="kenzi-speech"></div>
+        </div>
+
+        <div id="instructions-overlay" class="instructions-overlay">
+            <div class="instructions-box">
+                <div class="instructions-header">
+                    <div class="kenzi-avatar-small">🦊</div>
+                    <h2>كيف تلعب؟</h2>
+                </div>
+                <div class="instructions-content">
+                    <div class="instruction-step">
+                        <div class="step-number">1</div>
+                        <div class="step-text">
+                            <h3>📱 وجّه الكاميرا</h3>
+                            <p>استخدم كاميرا هاتفك لمسح العلامات</p>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">2</div>
+                        <div class="step-text">
+                            <h3>🎯 ابحث عن العلامة رقم 0</h3>
+                            <p>ابدأ بالعلامة الأولى (Marker 0)</p>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">3</div>
+                        <div class="step-text">
+                            <h3>❓ أجب على السؤال</h3>
+                            <p>سيظهر السؤال تلقائياً عند اكتشاف العلامة</p>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">4</div>
+                        <div class="step-text">
+                            <h3>⭐ اجمع النقاط</h3>
+                            <p>احصل على نقاط لكل إجابة صحيحة!</p>
+                        </div>
+                    </div>
+                </div>
+                <button id="start-scanning" class="btn btn-primary">✨ ابدأ المسح الآن</button>
+            </div>
+        </div>
+
+        <div id="question-panel" class="hidden">
+            <div class="kenzi-question-header">
+                <div class="kenzi-avatar-small">🦊</div>
+                <span class="kenzi-says">كنزي يسأل:</span>
+            </div>
+            <div class="question-content">
+                <h2 id="question-text"></h2>
+                <div id="answers-container"></div>
+                <div id="feedback" class="hidden"></div>
+            </div>
+        </div>
+
+        <div id="celebration-overlay" class="hidden">
+            <div class="celebration-content">
+                <div class="kenzi-celebrate">🦊</div>
+                <div class="confetti"></div>
+                <h2 id="celebration-text"></h2>
+            </div>
+        </div>
+
+        <div id="marker-hint" class="marker-hint hidden">
+            <div class="hint-content">
+                <div class="hint-icon">🎯</div>
+                <p>ابحث عن العلامة رقم <span id="next-marker-number">0</span></p>
+                <div class="hint-arrow">👇</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

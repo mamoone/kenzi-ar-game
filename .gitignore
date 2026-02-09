@@ -1,0 +1,22 @@
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+
+# Node modules (if you add any build tools later)
+node_modules/
+
+# User data (optional - uncomment if you want to ignore local storage exports)
+# *.json

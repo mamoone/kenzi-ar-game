@@ -1,0 +1,1569 @@
+/* ============================================
+   KENZI - Système CSS Propre et Moderne
+   Version 3.1 - Layout Clean avec Grid/Flexbox
+   ============================================ */
+
+/* ============================================
+   0. ANIMATIONS DE FOND
+   ============================================ */
+
+.animated-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    background: transparent;
+    pointer-events: none;
+}
+
+.sky-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    overflow: hidden;
+}
+
+.cloud {
+    position: absolute;
+    font-size: 40px;
+    opacity: 0.3;
+    animation: floatCloud linear infinite;
+}
+
+.cloud-1 {
+    top: 10%;
+    left: -10%;
+    animation-duration: 50s;
+}
+
+.cloud-2 {
+    top: 20%;
+    left: -15%;
+    animation-duration: 60s;
+    animation-delay: -20s;
+}
+
+.cloud-3,
+.cloud-4 {
+    display: none;
+}
+
+@keyframes floatCloud {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(100vw + 200px)); }
+}
+
+.star {
+    display: none;
+}
+
+.ground-layer {
+    display: none;
+}
+
+/* ============================================
+   1. RESET ET BASE
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    width: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Fredoka One', 'Baloo 2', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+    background: linear-gradient(135deg, #FF6B9D 0%, #FFD93D 50%, #6BCF7F 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    line-height: 1.6;
+    width: 100%;
+    position: relative;
+}
+
+/* Support RTL pour l'arabe */
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+/* ============================================
+   2. SYSTÈME DE GRILLE SIMPLE
+   ============================================ */
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.container-sm {
+    max-width: 600px;
+}
+
+.container-md {
+    max-width: 900px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -0.5rem;
+}
+
+.col {
+    flex: 1;
+    padding: 0.5rem;
+}
+
+.col-12 { width: 100%; }
+.col-6 { width: 50%; }
+.col-4 { width: 33.333%; }
+.col-3 { width: 25%; }
+
+@media (max-width: 768px) {
+    .col-6, .col-4, .col-3 {
+        width: 100%;
+    }
+}
+
+h1 {
+    color: #FF6B9D;
+    font-size: 2.8rem;
+    margin-bottom: 2rem;
+    text-shadow: 4px 4px 0px #FFD93D, 8px 8px 0px rgba(0,0,0,0.2);
+    font-weight: 900;
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 40px;
+    border: 8px solid #FFD93D;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.3), inset 0 -8px 0 rgba(255,217,61,0.3);
+    transform: rotate(-2deg);
+    animation: titleBounce 3s ease-in-out infinite;
+}
+
+@keyframes titleBounce {
+    0%, 100% { transform: rotate(-2deg) translateY(0); }
+    50% { transform: rotate(-2deg) translateY(-10px); }
+}
+
+/* ============================================
+   3. UTILITAIRES SPACING
+   ============================================ */
+
+.m-0 { margin: 0 !important; }
+.m-1 { margin: 0.5rem !important; }
+.m-2 { margin: 1rem !important; }
+.m-3 { margin: 1.5rem !important; }
+.m-4 { margin: 2rem !important; }
+
+.mt-0 { margin-top: 0 !important; }
+.mt-1 { margin-top: 0.5rem !important; }
+.mt-2 { margin-top: 1rem !important; }
+.mt-3 { margin-top: 1.5rem !important; }
+
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: 0.5rem !important; }
+.mb-2 { margin-bottom: 1rem !important; }
+.mb-3 { margin-bottom: 1.5rem !important; }
+
+.p-0 { padding: 0 !important; }
+.p-1 { padding: 0.5rem !important; }
+.p-2 { padding: 1rem !important; }
+.p-3 { padding: 1.5rem !important; }
+.p-4 { padding: 2rem !important; }
+
+/* ============================================
+   4. ÉCRANS ET LAYOUT
+   ============================================ */
+
+.screen {
+    display: none;
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.screen.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+}
+
+#game-screen.screen.active {
+    display: block;
+    padding: 0;
+}
+
+#welcome-screen.screen.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ============================================
+   5. CARTES ET CONTENEURS
+   ============================================ */
+
+.card {
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFF9E6 100%);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 10px 30px rgba(255, 217, 61, 0.3);
+    border: 4px solid #FFD93D;
+    position: relative;
+    width: calc(100% - 1rem);
+    max-width: 500px;
+    margin: 0 auto;
+    overflow: visible;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #FFD93D;
+}
+
+.card-body {
+    padding: 0;
+}
+
+.card-footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #FFD93D;
+}
+
+/* ============================================
+   6. TYPOGRAPHIE
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 1rem 0;
+    font-weight: bold;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 2rem;
+    color: #FF6B9D;
+    text-shadow: 2px 2px 4px rgba(255, 107, 157, 0.3);
+}
+
+h2 {
+    font-size: 1.5rem;
+    color: #6BCF7F;
+}
+
+h3 {
+    font-size: 1.25rem;
+    color: #4D96FF;
+}
+
+p {
+    margin: 0 0 1rem 0;
+    color: #333;
+}
+
+/* ============================================
+   7. FORMULAIRES
+   ============================================ */
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    background: white;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #FFD93D;
+    box-shadow: 0 0 0 3px rgba(255, 217, 61, 0.2);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+input[type="text"] {
+    width: 100%;
+    max-width: 450px;
+    padding: 1.5rem 2rem;
+    font-size: 1.4rem;
+    border: 6px solid white;
+    border-radius: 35px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    background: white;
+    color: #FF6B9D;
+    font-weight: 900;
+    transition: all 0.3s;
+    box-shadow: 0 8px 0 rgba(255,217,61,0.3), 0 12px 30px rgba(0,0,0,0.2);
+}
+
+input[type="text"]:focus {
+    outline: none;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 0 rgba(255,217,61,0.4), 0 18px 40px rgba(0,0,0,0.3);
+    border-color: #FFD93D;
+}
+
+/* ============================================
+   8. BOUTONS
+   ============================================ */
+
+.btn {
+    display: inline-block;
+    padding: 1.5rem 3rem;
+    font-size: 1.4rem;
+    border: 6px solid white;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 900;
+    transition: all 0.3s;
+    box-shadow: 0 12px 0 rgba(0,0,0,0.2), 0 15px 40px rgba(0,0,0,0.3);
+    margin: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    transform: translateY(0);
+}
+
+.btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 0 rgba(0,0,0,0.2), 0 20px 50px rgba(0,0,0,0.4);
+}
+
+.btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6BCF7F 0%, #4D96FF 100%);
+    color: white;
+    animation: btnPulse 2s ease-in-out infinite;
+}
+
+@keyframes btnPulse {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-2px) scale(1.05); }
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #FFD93D 0%, #FFA07A 100%);
+    color: white;
+}
+
+.btn-danger {
+    background: #ff4757;
+    color: white;
+}
+
+.btn-block {
+    width: 100%;
+    display: block;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+}
+
+/* ============================================
+   9. ADMIN LAYOUT
+   ============================================ */
+
+.admin-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #FFFFFF 0%, #F0F8FF 100%);
+    padding: 0.5rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.admin-section {
+    background: linear-gradient(135deg, #FFF9E6 0%, #FFFFFF 100%);
+    padding: 1rem;
+    border-radius: 15px;
+    margin-bottom: 1rem;
+    box-shadow: 0 5px 15px rgba(255, 217, 61, 0.3);
+    border: 3px solid #FFD93D;
+    overflow-x: hidden;
+}
+
+.admin-section-title {
+    margin: 0 0 1rem 0;
+    color: #4D96FF;
+    font-size: 1.5rem;
+}
+
+/* ============================================
+   10. LISTE DE QUESTIONS
+   ============================================ */
+
+.questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.question-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.question-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.question-item-title {
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.question-item-body {
+    color: #666;
+}
+
+.question-item-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+/* ============================================
+   11. KENZI CHARACTER
+   ============================================ */
+
+.kenzi-character {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.kenzi-character {
+    position: fixed !important;
+    bottom: 10px !important;
+    left: 10px !important;
+    z-index: 90;
+    animation: none;
+    transform: none !important;
+    background: transparent !important;
+    padding: 0.3rem;
+    border-radius: 15px;
+    box-shadow: 0 3px 0 rgba(255,217,61,0.3), 0 5px 10px rgba(0,0,0,0.1);
+    border: 2px solid #FFD93D;
+    max-width: 150px;
+}
+
+.kenzi-character::before {
+    display: none;
+}
+
+.kenzi-character::after {
+    display: none;
+}
+
+@keyframes sparkle {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.3) rotate(180deg); opacity: 0.7; }
+}
+
+.kenzi-avatar {
+    font-size: 25px;
+    animation: bounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 3px 6px rgba(255, 107, 157, 0.3));
+    display: inline-block;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.kenzi-speech-bubble {
+    background: linear-gradient(135deg, #FFD93D 0%, #FFA07A 100%);
+    color: white;
+    padding: 0.3rem 0.5rem;
+    border-radius: 10px;
+    margin-top: 0.3rem;
+    box-shadow: 0 2px 0 rgba(255,160,122,0.3), 0 3px 8px rgba(255, 217, 61, 0.2);
+    position: relative;
+    font-weight: 600;
+    font-size: 0.65rem;
+    border: 2px solid white;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+    animation: none;
+}
+
+@keyframes bubbleWiggle {
+    0%, 100% { transform: rotate(-1deg); }
+    50% { transform: rotate(1deg); }
+}
+
+.kenzi-speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 10px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #FFA07A;
+}
+
+/* ============================================
+   12. GAME UI
+   ============================================ */
+
+#game-screen {
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+#game-ui {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    color: #333;
+    padding: calc(0.4rem + env(safe-area-inset-top)) 0.8rem 0.4rem 0.8rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-bottom: 3px solid #FFD93D;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+#score-panel {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    align-items: center;
+    position: relative;
+}
+
+.score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+#player-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: #FFD93D;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    border: 2px solid #FFA500;
+    font-size: 0.7rem;
+    color: #333;
+    font-weight: 700;
+    text-align: center;
+}
+
+#score {
+    text-align: center;
+    background: #6BCF7F;
+    border: 2px solid #4CAF50;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: white;
+    font-weight: 700;
+}
+
+@keyframes scoreGlow {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+#progress {
+    text-align: center;
+    background: #4D96FF;
+    border: 2px solid #2979FF;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    color: white;
+    font-weight: 700;
+}
+
+#exit-game {
+    grid-column: 1 / -1;
+    padding: 0.4rem 0.8rem;
+    border-radius: 10px;
+    border: 2px solid #FF3D6E;
+    background: #FF6B9D;
+    color: white;
+    font-weight: 700;
+    font-size: 0.75rem;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2), 0 5px 15px rgba(255,61,110,0.4);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    margin-top: 0.3rem;
+}
+
+#exit-game:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0 rgba(0,0,0,0.2), 0 15px 40px rgba(255,61,110,0.5);
+}
+
+#exit-game:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.2), 0 5px 15px rgba(255,61,110,0.3);
+}
+
+#ar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    display: block;
+}
+
+#ar-container a-scene {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    background: transparent !important;
+}
+
+#ar-container canvas {
+    display: block !important;
+}
+
+#question-panel {
+    display: none !important;
+}
+
+.kenzi-question-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.kenzi-avatar-small {
+    font-size: 40px;
+}
+
+.question-content h2 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+#answers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.answer-btn {
+    padding: 1rem;
+    background: white;
+    border: 3px solid #e0e0e0;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.answer-btn:hover {
+    background: #f0f8ff;
+    border-color: #4D96FF;
+    transform: translateX(5px);
+}
+
+.answer-btn.correct {
+    background: #d4edda;
+    border-color: #28a745;
+    animation: correctPulse 0.5s ease-out;
+}
+
+.answer-btn.incorrect {
+    background: #f8d7da;
+    border-color: #dc3545;
+    animation: shake 0.5s ease-out;
+}
+
+@keyframes correctPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* ============================================
+   13. INSTRUCTIONS OVERLAY
+   ============================================ */
+
+.instructions-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.95) 0%, rgba(77, 150, 255, 0.95) 100%);
+    z-index: 250;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.instructions-box {
+    background: white;
+    border-radius: 30px;
+    padding: 1.5rem;
+    max-width: 400px;
+    width: calc(100% - 2rem);
+    border: 5px solid #FFD93D;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 0 10px rgba(255, 255, 255, 0.5);
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.instructions-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #FFD93D 0%, #FFA07A 100%);
+    padding: 1rem;
+    border-radius: 20px;
+    border: 3px solid #FF6B9D;
+}
+
+.instructions-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: white;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+}
+
+.instruction-step {
+    background: linear-gradient(135deg, #F0F9FF 0%, #FFF9E6 100%);
+    padding: 1rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+    border: 3px solid #E0E0E0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.instruction-step:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.step-number {
+    background: linear-gradient(135deg, #FF6B9D 0%, #FFD93D 100%);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    border: 4px solid white;
+    box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+}
+
+.step-text h3 {
+    margin: 0.5rem 0 0.5rem 0;
+    font-size: 1rem;
+    color: #333;
+    font-weight: 700;
+}
+
+.step-text p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* ============================================
+   14. MARKER HINT
+   ============================================ */
+
+.marker-hint {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%) translateZ(0);
+    -webkit-transform: translateX(-50%) translateZ(0);
+    z-index: 180;
+    max-width: 90%;
+    will-change: transform;
+}
+
+.hint-content {
+    background: linear-gradient(135deg, #FF6B9D 0%, #FFD93D 100%);
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
+    text-align: center;
+    border: 3px solid white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+.hint-icon {
+    font-size: 30px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.hint-content p {
+    margin: 0.3rem 0;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.hint-arrow {
+    font-size: 30px;
+    animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ============================================
+   15. CELEBRATION
+   ============================================ */
+
+#celebration-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.celebration-content {
+    text-align: center;
+    color: white;
+}
+
+.kenzi-celebrate {
+    font-size: 150px;
+    animation: celebrate 1s ease-out infinite;
+}
+
+@keyframes celebrate {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(-10deg) scale(1.1); }
+    75% { transform: rotate(10deg) scale(1.1); }
+}
+
+/* ============================================
+   16. KENZI IN GAME
+   ============================================ */
+
+#kenzi-game-character {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    z-index: 150;
+    background: white;
+    padding: 20px;
+    border-radius: 50%;
+    border: 8px solid #FFD93D;
+    box-shadow: 0 8px 0 rgba(255,217,61,0.6), 0 15px 50px rgba(255, 217, 61, 0.7);
+    animation: kenziFloat 3s ease-in-out infinite;
+}
+
+@keyframes kenziFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.kenzi-avatar-game {
+    font-size: 100px;
+    animation: bounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 8px 20px rgba(255, 107, 157, 0.6));
+    cursor: pointer;
+    display: inline-block;
+}
+
+.kenzi-speech {
+    background: linear-gradient(135deg, #FF6B9D 0%, #FFD93D 100%);
+    border: 6px solid white;
+    border-radius: 30px;
+    padding: 1.3rem 1.8rem;
+    margin-top: 1rem;
+    max-width: 320px;
+    box-shadow: 0 6px 0 rgba(255,107,157,0.5), 0 12px 40px rgba(255, 107, 157, 0.7);
+    font-weight: 900;
+    color: white;
+    font-size: 1.25rem;
+    text-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+    animation: popIn 0.5s ease-out;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* ============================================
+   17. AR MAGIC OVERLAY
+   ============================================ */
+
+.ar-magic-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem 1rem;
+    background: radial-gradient(circle at 50% 50%, rgba(107, 207, 127, 0.3) 0%, rgba(77, 150, 255, 0.2) 100%);
+    backdrop-filter: blur(8px);
+    animation: overlayFadeIn 0.5s ease-out;
+    overflow: hidden;
+}
+
+/* Particules magiques */
+.magic-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.particle {
+    position: absolute;
+    font-size: 2rem;
+    animation: particleFloat linear infinite;
+    opacity: 0;
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-20vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Nuages flottants */
+.floating-clouds {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.cloud {
+    position: absolute;
+    font-size: 3rem;
+    opacity: 0.6;
+    animation: cloudDrift linear infinite;
+}
+
+@keyframes cloudDrift {
+    from {
+        transform: translateX(-10%);
+    }
+    to {
+        transform: translateX(110%);
+    }
+}
+
+/* Confettis */
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    animation: confettiFall ease-in forwards;
+}
+
+@keyframes confettiFall {
+    to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+@keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.ar-magic-overlay.fade-out {
+    animation: overlayFadeOut 0.5s ease-out forwards;
+}
+
+@keyframes overlayFadeOut {
+    to { opacity: 0; transform: scale(0.9); }
+}
+
+.ar-question-panel {
+    background: linear-gradient(135deg, #E8F4FF 0%, #FFFFFF 100%);
+    border: 8px solid #FFD700;
+    border-radius: 50px;
+    padding: 2.5rem 2rem;
+    max-width: 90%;
+    width: 500px;
+    box-shadow: 0 20px 0 rgba(255, 215, 0, 0.4), 0 25px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 5;
+    animation: panelBounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes panelBounceIn {
+    0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+    60% { transform: scale(1.1) rotate(2deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.cloud-decoration {
+    position: absolute;
+    font-size: 3.5rem;
+    animation: cloudFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+.cloud-top {
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+@keyframes cloudFloat {
+    0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
+    50% { transform: translateX(-50%) translateY(-15px) scale(1.1); }
+}
+
+.ar-question-title {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #FF6B9D;
+    text-align: center;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 0px #FFD93D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.ar-question-text {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #333;
+    text-align: center;
+    line-height: 1.5;
+    text-shadow: 1px 1px 2px rgba(255, 215, 0, 0.3);
+}
+
+.magic-stars {
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 1rem;
+    animation: starsSparkle 2s ease-in-out infinite;
+}
+
+@keyframes starsSparkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+.ar-answers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 500px;
+    padding: 0 1rem;
+    z-index: 5;
+    position: relative;
+}
+
+.ar-answer-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 1.5rem;
+    border: 6px solid white;
+    border-radius: 40px;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 0 rgba(0, 0, 0, 0.2), 0 12px 30px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    animation: btnSlideIn 0.5s ease-out backwards;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes btnSlideIn {
+    from { transform: translateX(-100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.ar-answer-btn:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 0 rgba(0, 0, 0, 0.2), 0 18px 40px rgba(0, 0, 0, 0.4);
+}
+
+.ar-answer-btn:active {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2), 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.ar-answer-btn.correct {
+    animation: correctPulse 0.6s ease-out;
+    background: linear-gradient(135deg, #6BCF7F 0%, #4CAF50 100%) !important;
+}
+
+@keyframes correctPulse {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.1) rotate(3deg); }
+    50% { transform: scale(1.15) rotate(-3deg); }
+    75% { transform: scale(1.1) rotate(2deg); }
+}
+
+.ar-answer-btn.incorrect {
+    animation: incorrectShake 0.5s ease-out;
+    background: linear-gradient(135deg, #FF3D6E 0%, #C62828 100%) !important;
+}
+
+@keyframes incorrectShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-15px) rotate(-5deg); }
+    50% { transform: translateX(15px) rotate(5deg); }
+    75% { transform: translateX(-10px) rotate(-3deg); }
+}
+
+.answer-emoji {
+    font-size: 2rem;
+    animation: emojiSpin 3s linear infinite;
+    display: inline-block;
+}
+
+@keyframes emojiSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.answer-text {
+    flex: 1;
+    text-align: center;
+    padding: 0 1rem;
+}
+
+.answer-star {
+    font-size: 1.5rem;
+    animation: starTwinkle 2s ease-in-out infinite;
+    display: inline-block;
+}
+
+@keyframes starTwinkle {
+    0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    50% { opacity: 0.6; transform: scale(1.2) rotate(180deg); }
+}
+
+/* ============================================
+   18. ANSWER ROW (DYNAMIC)
+   ============================================ */
+
+.answer-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.answer-row .answer-input {
+    flex: 1;
+}
+
+.answer-row .remove-answer {
+    padding: 0.5rem 0.75rem;
+    background: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.answer-row .remove-answer:hover {
+    background: #ff3838;
+    transform: scale(1.1);
+}
+
+/* ============================================
+   18. UTILITAIRES
+   ============================================ */
+
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-1 { gap: 0.5rem; }
+.gap-2 { gap: 1rem; }
+.gap-3 { gap: 1.5rem; }
+
+/* ============================================
+   19. RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+        position: relative;
+    }
+    
+    h1 { font-size: 1.4rem; }
+    h2 { font-size: 1.2rem; }
+    h3 { font-size: 1rem; }
+    
+    .screen.active {
+        padding: 0.25rem;
+    }
+    
+    .card {
+        padding: 0.75rem;
+        width: calc(100% - 0.5rem);
+        border: 3px solid #FFD93D;
+    }
+    
+    .admin-wrapper {
+        padding: 0.25rem;
+    }
+    
+    .admin-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    
+    .admin-section {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .question-item {
+        padding: 0.5rem;
+    }
+    
+    .kenzi-avatar {
+        font-size: 70px;
+    }
+    
+    #game-ui {
+        padding: 0.5rem;
+    }
+    
+    #question-panel {
+        padding: 0.75rem 0.5rem;
+        max-height: 70vh;
+        border-radius: 15px 15px 0 0;
+    }
+    
+    .instructions-box {
+        padding: 0.75rem;
+        width: calc(100% - 1rem);
+        max-height: 80vh;
+    }
+    
+    .step-number {
+        width: 32px;
+        height: 32px;
+        font-size: 1.1rem;
+    }
+    
+    .form-control {
+        padding: 0.6rem;
+        font-size: 0.95rem;
+    }
+    
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw;
+    }
+    
+    .container {
+        padding: 0.25rem;
+    }
+    
+    .card {
+        padding: 0.5rem;
+        width: calc(100% - 0.25rem);
+    }
+    
+    .admin-wrapper {
+        padding: 0.25rem;
+    }
+    
+    .admin-section {
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .kenzi-avatar {
+        font-size: 60px;
+    }
+    
+    .kenzi-avatar-game {
+        font-size: 45px;
+    }
+    
+    #kenzi-game-character {
+        bottom: 5px;
+        left: 5px;
+    }
+    
+    #question-panel {
+        padding: 0.5rem;
+        max-height: 65vh;
+    }
+    
+    .instructions-box {
+        padding: 0.5rem;
+        width: calc(100% - 0.5rem);
+    }
+    
+    h1 { font-size: 1.2rem; }
+    h2 { font-size: 1.1rem; }
+    h3 { font-size: 0.95rem; }
+}
+
+/* ============================================
+   20. ANIMATIONS GLOBALES
+   ============================================ */
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* ============================================
+   FIN DU FICHIER
+   ============================================ */
