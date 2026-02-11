@@ -262,10 +262,29 @@ class TreasureHuntGame {
         // Forcer immédiatement
         forceVideo();
         
-        // Forcer toutes les 100ms pour contrer AR.js
-        setInterval(forceVideo, 100);
+        // Forcer toutes les 100ms pour contrer AR.js et corriger le Raycaster
+        setInterval(() => {
+            forceVideo();
+            this.updateCameraAspect();
+        }, 100);
         
         console.log('🎥 Force video fullscreen activé');
+    }
+    
+    updateCameraAspect() {
+        // Corriger l'aspect ratio de la caméra pour aligner le Raycaster avec l'écran étiré
+        const scene = document.querySelector('a-scene');
+        if (scene && scene.camera) {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const aspect = width / height;
+            
+            if (scene.camera.aspect !== aspect) {
+                scene.camera.aspect = aspect;
+                scene.camera.updateProjectionMatrix();
+                // console.log('📷 Camera aspect updated to:', aspect);
+            }
+        }
     }
 
     initAR() {
@@ -298,14 +317,33 @@ class TreasureHuntGame {
                     this.onMarkerLost(question);
                 });
                 
-                // Event listeners pour les cubes de réponses
+                // Event listeners et Textures pour les cubes de réponses
                 question.answers.forEach((answer, index) => {
                     const answerBox = document.querySelector(`.answer-${question.markerId}-${index}`);
                     if (answerBox) {
-                        answerBox.addEventListener('click', () => {
+                        // Générer et appliquer la texture avec le texte de la réponse
+                        const texture = this.generateAnswerSVG(answer);
+                        answerBox.setAttribute('src', texture);
+                        answerBox.setAttribute('color', 'white'); // Reset couleur pour voir la texture
+                        
+                        answerBox.addEventListener('click', (evt) => {
                             console.log('🖱️ Réponse cliquée:', answer);
-                            this.checkAnswer(answer, question);
+                            // Animation de clic
+                            if (evt.target) {
+                                evt.target.setAttribute('animation__click', {
+                                    property: 'scale',
+                                    to: '0.9 0.9 0.9',
+                                    dur: 150,
+                                    easing: 'easeInQuad',
+                                    dir: 'alternate',
+                                    loop: 1
+                                });
+                            }
+                            this.checkAnswer(answer, question, answerBox);
                         });
+                        
+                        // Fix pour le curseur : agrandir la zone de hit avec une sphère invisible si besoin
+                        // Ou s'assurer que l'objet est bien "clickable" (classe ajoutée dans HTML)
                     }
                 });
                 
@@ -318,34 +356,45 @@ class TreasureHuntGame {
         console.log('🎯 Total marqueurs configurés:', this.markersCreated.size);
     }
 
+    generateAnswerSVG(text) {
+        // Création d'une texture SVG dynamique pour le texte arabe
+        const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="512" height="128" viewBox="0 0 512 128">
+            <rect width="512" height="128" rx="30" ry="30" fill="#FFEB3B" stroke="#FBC02D" stroke-width="10"/>
+            <!-- Ombre portée du texte -->
+            <text x="256" y="88" font-family="Arial, sans-serif" font-size="70" font-weight="900" fill="rgba(0,0,0,0.2)" text-anchor="middle" dominant-baseline="middle">${text}</text>
+            <!-- Texte principal -->
+            <text x="253" y="85" font-family="Arial, sans-serif" font-size="70" font-weight="900" fill="#3E2723" text-anchor="middle" dominant-baseline="middle">${text}</text>
+        </svg>`;
+        return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
+    }
+
     onMarkerFound(question) {
         console.log('🎯 Marqueur détecté:', question.markerId, '-', question.question);
+        this.playSFX('appear');
         
         // Vérifier si les éléments 3D existent dans le DOM
         const marker = document.getElementById(`marker-${question.markerId}`);
         if (marker) {
-            console.log('✅ Marqueur HTML trouvé:', marker);
-            const children = marker.querySelectorAll('*');
-            console.log(`📦 Nombre d'enfants dans le marqueur: ${children.length}`);
-            children.forEach((child, index) => {
-                console.log(`  ${index + 1}. ${child.tagName} - visible: ${child.object3D ? child.object3D.visible : 'N/A'}`);
-            });
-            
-            // Vérifier spécifiquement le panneau question
-            const questionPanel = marker.querySelector('a-box[src]');
-            if (questionPanel) {
-                console.log('📋 Panneau question trouvé:', questionPanel);
-                console.log('   Position:', questionPanel.getAttribute('position'));
-                console.log('   Width:', questionPanel.getAttribute('width'));
-                console.log('   Height:', questionPanel.getAttribute('height'));
-                console.log('   Src:', questionPanel.getAttribute('src'));
-                if (questionPanel.object3D) {
-                    console.log('   Object3D visible:', questionPanel.object3D.visible);
-                    console.log('   Object3D position:', questionPanel.object3D.position);
-                }
-            } else {
-                console.error('❌ Panneau question NON trouvé dans le marqueur!');
+            // Animation "Sexy Pop-in"
+            const contentEntity = marker.querySelector('a-entity');
+            if (contentEntity) {
+                // Reset scale to 0
+                contentEntity.setAttribute('scale', '0 0 0');
+                // Animate to target scale (2.5 2.5 2.5)
+                contentEntity.setAttribute('animation__popin', {
+                    property: 'scale',
+                    to: '2.5 2.5 2.5',
+                    dur: 1000,
+                    easing: 'easeOutElastic'
+                });
+                
+                // Ajouter des particules magiques (sphères qui s'envolent)
+                this.spawnMagicParticles(marker);
             }
+            
+            console.log('✅ Marqueur HTML trouvé:', marker);
+            // ... logs
         } else {
             console.error('❌ Marqueur HTML NON trouvé:', `marker-${question.markerId}`);
         }
@@ -359,15 +408,66 @@ class TreasureHuntGame {
         this.currentQuestion = question;
         this.kenziSpeak(question.question);
     }
+    
+    spawnMagicParticles(marker) {
+        // Créer quelques particules temporaires
+        const colors = ['#FFD93D', '#FF6B9D', '#6BCF7F', '#4D96FF'];
+        for(let i=0; i<8; i++) {
+            const particle = document.createElement('a-sphere');
+            particle.setAttribute('radius', '0.1');
+            particle.setAttribute('color', colors[Math.floor(Math.random() * colors.length)]);
+            particle.setAttribute('position', `${(Math.random()-0.5)*2} 0 ${(Math.random()-0.5)*2}`);
+            particle.setAttribute('opacity', '0.8');
+            
+            // Animation mouvement vers le haut et disparition
+            particle.setAttribute('animation__move', {
+                property: 'position',
+                to: `${(Math.random()-0.5)*3} 2 ${(Math.random()-0.5)*3}`,
+                dur: 1500,
+                easing: 'easeOutQuad'
+            });
+            particle.setAttribute('animation__fade', {
+                property: 'opacity',
+                to: '0',
+                dur: 1500,
+                easing: 'linear'
+            });
+            
+            marker.appendChild(particle);
+            
+            // Nettoyage
+            setTimeout(() => {
+                if(particle.parentNode) particle.parentNode.removeChild(particle);
+            }, 1500);
+        }
+    }
 
     onMarkerLost(question) {
         console.log('❌ Marqueur perdu:', question.markerId);
     }
     
     
-    checkAnswer(selectedAnswer, question) {
+    checkAnswer(selectedAnswer, question, clickedElement = null) {
         console.log('✅ Vérification réponse:', selectedAnswer, 'vs', question.correctAnswer);
         const isCorrect = selectedAnswer === question.correctAnswer;
+        
+        // Feedback visuel sur l'élément cliqué
+        if (clickedElement) {
+            const originalSrc = clickedElement.getAttribute('src');
+            // Texture verte ou rouge temporaire (simple couleur pour feedback immédiat)
+            const feedbackColor = isCorrect ? '#4CAF50' : '#F44336';
+            
+            clickedElement.removeAttribute('src'); // Enlever texture pour voir la couleur
+            clickedElement.setAttribute('color', feedbackColor);
+            
+            // Revenir à la texture originale après 1s
+            setTimeout(() => {
+                if (clickedElement) {
+                    clickedElement.setAttribute('color', 'white');
+                    clickedElement.setAttribute('src', originalSrc);
+                }
+            }, 1000);
+        }
         
         if (isCorrect) {
             this.score += question.points || 10;
@@ -487,6 +587,14 @@ class TreasureHuntGame {
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 1);
+        } else if (type === 'appear') {
+            // Son magique d'apparition (glissando montant)
+            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
         }
     }
 
@@ -506,19 +614,43 @@ class TreasureHuntGame {
             speechBubble.style.display = 'block';
         }
         
-        // Synthèse vocale
+        // Synthèse vocale avec pauses
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(message);
-            utterance.lang = 'ar-SA';
-            utterance.rate = 0.9;
-            utterance.pitch = 1.2;
-            utterance.volume = 1.0;
             
-            setTimeout(() => {
-                window.speechSynthesis.speak(utterance);
-            }, 100);
+            // Découper le message par ponctuation (., !, ?, ،)
+            // On garde la ponctuation dans le segment précédent
+            let phrases = message.match(/[^.!?،]+[.!?،]*/g) || [message];
+            phrases = phrases.map(p => p.trim()).filter(p => p.length > 0);
+            
+            this.speakPhrasesSequentially(phrases, 0);
         }
+    }
+    
+    speakPhrasesSequentially(phrases, index) {
+        if (index >= phrases.length) return;
+        
+        const text = phrases[index];
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ar-SA';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.2;
+        utterance.volume = 1.0;
+        
+        utterance.onend = () => {
+            // Pause de 500ms entre les phrases
+            setTimeout(() => {
+                this.speakPhrasesSequentially(phrases, index + 1);
+            }, 500);
+        };
+        
+        // Gérer les erreurs pour ne pas bloquer la file
+        utterance.onerror = () => {
+            console.error('Erreur TTS, passage à la phrase suivante');
+            this.speakPhrasesSequentially(phrases, index + 1);
+        };
+        
+        window.speechSynthesis.speak(utterance);
     }
 
     exitGame() {

@@ -263,14 +263,23 @@
     
     /* Instructions pour tablette */
     .instructions-box {
-        max-width: 600px;
+        max-width: 900px;
+        width: 98%;
         margin: 2rem auto;
-        padding: 2rem;
+        padding: 2.5rem;
     }
     
     .instruction-step {
-        padding: 1.2rem;
-        margin-bottom: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .step-text h3 {
+        font-size: 1.2rem;
+    }
+
+    .step-text p {
+        font-size: 1rem;
     }
     
     /* AR overlay pour tablette - zones cliquables plus grandes */
@@ -1422,7 +1431,9 @@ body.game-active #ar-container {
 
 /* Cacher éléments AR.js inutiles (laisser le canvas visible) */
 #ar-container .a-enter-vr,
-#ar-container .a-orientation-modal {
+#ar-container .a-orientation-modal,
+.rs-base,
+.a-enter-ar {
     display: none !important;
 }
 
@@ -1542,8 +1553,8 @@ body.game-active #ar-container {
     background: white;
     border-radius: 30px;
     padding: 1.5rem;
-    max-width: 400px;
-    width: calc(100% - 2rem);
+    max-width: 900px;
+    width: 98%;
     border: 5px solid #FFD93D;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 0 10px rgba(255, 255, 255, 0.5);
     max-height: 80vh;
