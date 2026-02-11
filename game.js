@@ -206,6 +206,73 @@ class TreasureHuntGame {
         }, 500);
     }
     
+    showInstructions() {
+        const overlay = document.getElementById('instructions-overlay');
+        if (overlay) {
+            overlay.classList.remove('hidden');
+            // S'assurer que l'overlay est bien au-dessus
+            overlay.style.display = 'flex';
+            
+            const startBtn = document.getElementById('start-scanning');
+            if (startBtn) {
+                // Cloner pour supprimer les anciens listeners
+                const newBtn = startBtn.cloneNode(true);
+                startBtn.parentNode.replaceChild(newBtn, startBtn);
+                
+                newBtn.addEventListener('click', () => {
+                    overlay.classList.add('hidden');
+                    overlay.style.display = 'none';
+                    this.kenziSpeak('ابحث عن العلامات الآن!');
+                    
+                    // Re-forcer le plein écran vidéo au cas où
+                    this.forceVideoFullscreen();
+                    
+                    // Démarrer la musique de fond si nécessaire (interaction utilisateur requise)
+                    if (!this.backgroundMusicPlaying && this.audioContext) {
+                        this.audioContext.resume();
+                    }
+                });
+            }
+        } else {
+            console.error('❌ Instructions overlay non trouvé!');
+        }
+    }
+
+    showInstructions() {
+        console.log('📖 Affichage des instructions...');
+        const overlay = document.getElementById('instructions-overlay');
+        if (overlay) {
+            overlay.classList.remove('hidden');
+            overlay.style.display = 'flex';
+            
+            const startBtn = document.getElementById('start-scanning');
+            if (startBtn) {
+                // Cloner pour supprimer les anciens listeners
+                const newBtn = startBtn.cloneNode(true);
+                startBtn.parentNode.replaceChild(newBtn, startBtn);
+                
+                newBtn.addEventListener('click', () => {
+                    console.log('✨ Bouton Start Scanning cliqué');
+                    overlay.classList.add('hidden');
+                    overlay.style.display = 'none';
+                    this.kenziSpeak('ابحث عن العلامات الآن!');
+                    
+                    // Re-forcer le plein écran vidéo au cas où
+                    this.forceVideoFullscreen();
+                    
+                    // Démarrer la musique de fond si nécessaire
+                    if (!this.backgroundMusicPlaying && this.audioContext) {
+                        try {
+                            this.audioContext.resume();
+                        } catch(e) { console.log('Audio resume error', e); }
+                    }
+                });
+            }
+        } else {
+            console.error('❌ Instructions overlay non trouvé!');
+        }
+    }
+
     forceVideoFullscreen() {
         // Fonction pour forcer la video à 100% de l'écran
         const forceVideo = () => {
@@ -222,7 +289,7 @@ class TreasureHuntGame {
             body.style.padding = '0';
             body.style.overflow = 'hidden';
             
-            // Forcer toutes les videos
+            // Forcer toutes les videos avec 'fill' pour aligner le raycaster
             videos.forEach(video => {
                 video.style.position = 'fixed';
                 video.style.top = '0';
@@ -268,7 +335,7 @@ class TreasureHuntGame {
             this.updateCameraAspect();
         }, 100);
         
-        console.log('🎥 Force video fullscreen activé');
+        console.log('🎥 Force video fullscreen activé (Mode FILL pour précision clic)');
     }
     
     updateCameraAspect() {
@@ -282,7 +349,6 @@ class TreasureHuntGame {
             if (scene.camera.aspect !== aspect) {
                 scene.camera.aspect = aspect;
                 scene.camera.updateProjectionMatrix();
-                // console.log('📷 Camera aspect updated to:', aspect);
             }
         }
     }
@@ -290,7 +356,6 @@ class TreasureHuntGame {
     initAR() {
         console.log('🎯 Initialisation AR...');
         const scene = document.querySelector('a-scene');
-        console.log('A-Scene trouvée:', scene);
         
         if (!scene) {
             console.error('❌ A-Scene introuvable!');
@@ -304,7 +369,6 @@ class TreasureHuntGame {
     createMarkers() {
         console.log('🎨 Attachement des event listeners aux marqueurs HTML...');
         
-        // Les marqueurs sont maintenant dans le HTML, on attache juste les event listeners
         this.questions.forEach(question => {
             const marker = document.getElementById(`marker-${question.markerId}`);
             if (marker) {
@@ -317,90 +381,104 @@ class TreasureHuntGame {
                     this.onMarkerLost(question);
                 });
                 
-                // Event listeners et Textures pour les cubes de réponses
+                // Event listeners pour les réponses
                 question.answers.forEach((answer, index) => {
                     const answerBox = document.querySelector(`.answer-${question.markerId}-${index}`);
                     if (answerBox) {
-                        // Générer et appliquer la texture avec le texte de la réponse
                         const texture = this.generateAnswerSVG(answer);
                         answerBox.setAttribute('src', texture);
-                        answerBox.setAttribute('color', 'white'); // Reset couleur pour voir la texture
+                        answerBox.setAttribute('color', 'white');
+                        
+                        // Assurer que l'objet est cliquable
+                        answerBox.classList.add('clickable');
                         
                         answerBox.addEventListener('click', (evt) => {
                             console.log('🖱️ Réponse cliquée:', answer);
-                            // Animation de clic
+                            this.playClickSound(); // Feedback sonore immédiat
+                            
+                            // Animation de clic "Press" (Pression stable)
                             if (evt.target) {
+                                // Reset échelle originale (au cas où)
+                                evt.target.setAttribute('scale', '1 1 1');
+                                
+                                // Effet de pression rapide
                                 evt.target.setAttribute('animation__click', {
                                     property: 'scale',
-                                    to: '0.9 0.9 0.9',
-                                    dur: 150,
-                                    easing: 'easeInQuad',
+                                    to: '0.9 0.9 0.9', // Rétrécit légèrement
+                                    dur: 100,
+                                    easing: 'easeOutQuad',
                                     dir: 'alternate',
                                     loop: 1
                                 });
                             }
                             this.checkAnswer(answer, question, answerBox);
                         });
-                        
-                        // Fix pour le curseur : agrandir la zone de hit avec une sphère invisible si besoin
-                        // Ou s'assurer que l'objet est bien "clickable" (classe ajoutée dans HTML)
                     }
                 });
                 
                 this.markersCreated.add(question.markerId);
-                console.log('✅ Event listeners attachés au marqueur:', question.markerId, '-', question.question);
-            } else {
-                console.error('❌ Marqueur HTML introuvable:', question.markerId);
             }
         });
-        console.log('🎯 Total marqueurs configurés:', this.markersCreated.size);
     }
 
     generateAnswerSVG(text) {
-        // Création d'une texture SVG dynamique pour le texte arabe
+        // Design "Bouton 3D" plus marqué
         const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="512" height="128" viewBox="0 0 512 128">
-            <rect width="512" height="128" rx="30" ry="30" fill="#FFEB3B" stroke="#FBC02D" stroke-width="10"/>
-            <!-- Ombre portée du texte -->
-            <text x="256" y="88" font-family="Arial, sans-serif" font-size="70" font-weight="900" fill="rgba(0,0,0,0.2)" text-anchor="middle" dominant-baseline="middle">${text}</text>
-            <!-- Texte principal -->
-            <text x="253" y="85" font-family="Arial, sans-serif" font-size="70" font-weight="900" fill="#3E2723" text-anchor="middle" dominant-baseline="middle">${text}</text>
+            <defs>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FFF59D;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#FFD54F;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FFB300;stop-opacity:1" />
+                </linearGradient>
+                <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                    <feOffset dx="0" dy="4" result="offsetblur"/>
+                    <feComponentTransfer>
+                        <feFuncA type="linear" slope="0.5"/>
+                    </feComponentTransfer>
+                    <feMerge>
+                        <feMergeNode/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <rect width="500" height="116" x="6" y="6" rx="30" ry="30" fill="url(#grad1)" stroke="#F57F17" stroke-width="6" filter="url(#shadow)"/>
+            <text x="256" y="80" font-family="Arial, sans-serif" font-size="60" font-weight="900" fill="rgba(0,0,0,0.15)" text-anchor="middle" dominant-baseline="middle">${text}</text>
+            <text x="253" y="77" font-family="Arial, sans-serif" font-size="60" font-weight="900" fill="#3E2723" text-anchor="middle" dominant-baseline="middle">${text}</text>
         </svg>`;
         return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
     }
 
     onMarkerFound(question) {
-        console.log('🎯 Marqueur détecté:', question.markerId, '-', question.question);
+        console.log('🎯 Marqueur détecté:', question.markerId);
         this.playSFX('appear');
         
-        // Vérifier si les éléments 3D existent dans le DOM
         const marker = document.getElementById(`marker-${question.markerId}`);
         if (marker) {
-            // Animation "Sexy Pop-in"
+            // Animation "Pop-in" Stable et Claire
             const contentEntity = marker.querySelector('a-entity');
             if (contentEntity) {
-                // Reset scale to 0
+                // Reset propre
                 contentEntity.setAttribute('scale', '0 0 0');
-                // Animate to target scale (2.5 2.5 2.5)
+                contentEntity.setAttribute('rotation', '-90 0 0'); // Rotation fixe, face caméra
+                
+                // Animation principale : Scale Up propre (sans rebond excessif)
                 contentEntity.setAttribute('animation__popin', {
                     property: 'scale',
                     to: '2.5 2.5 2.5',
-                    dur: 1000,
-                    easing: 'easeOutElastic'
+                    dur: 600, // Plus rapide
+                    easing: 'easeOutBack' // Plus sec, moins "gelée"
                 });
                 
-                // Ajouter des particules magiques (sphères qui s'envolent)
-                this.spawnMagicParticles(marker);
+                // Suppression de l'animation de Tilt pour la stabilité de lecture
+                contentEntity.removeAttribute('animation__tilt');
+                
+                this.spawnMagicEffects(marker);
             }
-            
-            console.log('✅ Marqueur HTML trouvé:', marker);
-            // ... logs
-        } else {
-            console.error('❌ Marqueur HTML NON trouvé:', `marker-${question.markerId}`);
         }
         
         if (this.answeredQuestions.has(question.id)) {
-            console.log('⚠️ Question déjà répondue');
             this.kenziSpeak('لقد أجبت على هذا السؤال من قبل!');
             return;
         }
@@ -409,192 +487,245 @@ class TreasureHuntGame {
         this.kenziSpeak(question.question);
     }
     
-    spawnMagicParticles(marker) {
-        // Créer quelques particules temporaires
-        const colors = ['#FFD93D', '#FF6B9D', '#6BCF7F', '#4D96FF'];
+    spawnMagicEffects(marker) {
+        // 1. Onde de choc au sol (Anneau propre qui ne cache pas le texte)
+        const ring = document.createElement('a-ring');
+        ring.setAttribute('color', '#FFD93D');
+        ring.setAttribute('radius-inner', '0.1');
+        ring.setAttribute('radius-outer', '0.2');
+        ring.setAttribute('rotation', '-90 0 0');
+        ring.setAttribute('position', '0 0.1 0');
+        ring.setAttribute('opacity', '0.8');
+        ring.setAttribute('material', 'shader: flat; transparent: true');
+        
+        // Expansion rapide
+        ring.setAttribute('animation__expand', {
+            property: 'radius-outer',
+            to: '3.0',
+            dur: 800,
+            easing: 'easeOutQuad'
+        });
+        ring.setAttribute('animation__inner', {
+            property: 'radius-inner',
+            to: '2.8',
+            dur: 800,
+            easing: 'easeOutQuad'
+        });
+        ring.setAttribute('animation__fade', {
+            property: 'opacity',
+            to: '0',
+            dur: 800,
+            easing: 'easeOutQuad'
+        });
+        
+        marker.appendChild(ring);
+        setTimeout(() => { if(ring.parentNode) ring.parentNode.removeChild(ring); }, 1000);
+
+        // 2. Étoiles flottantes sur les côtés (Pas devant le texte)
+        const colors = ['#FFD93D', '#FF6B9D', '#4D96FF'];
         for(let i=0; i<8; i++) {
-            const particle = document.createElement('a-sphere');
-            particle.setAttribute('radius', '0.1');
-            particle.setAttribute('color', colors[Math.floor(Math.random() * colors.length)]);
-            particle.setAttribute('position', `${(Math.random()-0.5)*2} 0 ${(Math.random()-0.5)*2}`);
-            particle.setAttribute('opacity', '0.8');
+            const star = document.createElement('a-dodecahedron');
+            star.setAttribute('radius', '0.1');
+            star.setAttribute('color', colors[i % colors.length]);
             
-            // Animation mouvement vers le haut et disparition
-            particle.setAttribute('animation__move', {
+            // Départ du sol
+            star.setAttribute('position', '0 0 0');
+            
+            // Trajectoire vers l'extérieur et le haut (autour de la question)
+            const angle = (i / 8) * Math.PI * 2;
+            const radius = 2.0; // Assez large pour ne pas cacher le texte
+            const x = Math.cos(angle) * radius;
+            const z = Math.sin(angle) * radius; // Z est Y dans l'espace du marker tourné, mais ici on veut Y vers le haut
+            // Attention: marker est souvent tourné. Si marker contient a-entity rot -90, le repère local est aligné.
+            // Ici on attache au marker brut. Marker brut est à plat sur l'image. Y est la normale (vers la caméra).
+            
+            star.setAttribute('animation__move', {
                 property: 'position',
-                to: `${(Math.random()-0.5)*3} 2 ${(Math.random()-0.5)*3}`,
+                to: `${x} 2.5 ${z}`, // Monte vers le ciel (Y) et s'écarte (X/Z)
                 dur: 1500,
-                easing: 'easeOutQuad'
+                easing: 'easeOutExpo'
             });
-            particle.setAttribute('animation__fade', {
-                property: 'opacity',
-                to: '0',
+            
+            // Rotation douce
+            star.setAttribute('animation__spin', {
+                property: 'rotation',
+                to: '360 360 0',
                 dur: 1500,
                 easing: 'linear'
             });
             
-            marker.appendChild(particle);
+            star.setAttribute('animation__fade', {
+                property: 'scale',
+                to: '0 0 0',
+                dur: 500,
+                delay: 1000,
+                easing: 'easeInQuad'
+            });
             
-            // Nettoyage
-            setTimeout(() => {
-                if(particle.parentNode) particle.parentNode.removeChild(particle);
-            }, 1500);
+            marker.appendChild(star);
+            setTimeout(() => { if(star.parentNode) star.parentNode.removeChild(star); }, 1500);
         }
+    }
+    
+    // Ajout d'un son de clic pour feedback immédiat
+    playClickSound() {
+        this.playSFX('click');
     }
 
     onMarkerLost(question) {
         console.log('❌ Marqueur perdu:', question.markerId);
     }
     
-    
-    checkAnswer(selectedAnswer, question, clickedElement = null) {
-        console.log('✅ Vérification réponse:', selectedAnswer, 'vs', question.correctAnswer);
-        const isCorrect = selectedAnswer === question.correctAnswer;
+    checkAnswer(answer, question, answerBox) {
+        if (this.answeredQuestions.has(question.id)) return;
         
-        // Feedback visuel sur l'élément cliqué
-        if (clickedElement) {
-            const originalSrc = clickedElement.getAttribute('src');
-            // Texture verte ou rouge temporaire (simple couleur pour feedback immédiat)
-            const feedbackColor = isCorrect ? '#4CAF50' : '#F44336';
-            
-            clickedElement.removeAttribute('src'); // Enlever texture pour voir la couleur
-            clickedElement.setAttribute('color', feedbackColor);
-            
-            // Revenir à la texture originale après 1s
-            setTimeout(() => {
-                if (clickedElement) {
-                    clickedElement.setAttribute('color', 'white');
-                    clickedElement.setAttribute('src', originalSrc);
-                }
-            }, 1000);
-        }
+        console.log(`Réponse choisie: ${answer}, Correcte: ${question.correctAnswer}`);
         
-        if (isCorrect) {
-            this.score += question.points || 10;
+        if (answer === question.correctAnswer) {
+            // Bonne réponse
             this.answeredQuestions.add(question.id);
+            this.score += question.points;
             this.updateScore();
             this.updateProgress();
             
-            const encouragements = [
-                'أحسنت! إجابة صحيحة! 🎉',
-                'ممتاز! واصل! ⭐',
-                'رائع جداً! 🌟',
-                'عظيم! أنت بطل! 🏆'
-            ];
-            const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
-            this.kenziSpeak(randomEncouragement);
+            // Feedback Visuel : Vert
+            answerBox.setAttribute('color', '#4CAF50');
+            
+            // Son et encouragement
             this.playSFX('correct');
-            this.createConfetti();
+            const phrase = this.getRandomPhrase('correct').replace('{name}', this.playerName);
+            this.kenziSpeak(phrase);
+            
+            // Animation de célébration locale (sur le marqueur)
+            this.spawnCelebration(answerBox.object3D.position, document.getElementById(`marker-${question.markerId}`));
+
+            // Vérifier victoire
+            if (this.answeredQuestions.size === this.questions.length) {
+                setTimeout(() => this.showVictoryScreen(), 2000);
+            }
         } else {
-            this.kenziSpeak('حاول مرة أخرى! 💪');
+            // Mauvaise réponse
+            // Feedback Visuel : Rouge temporaire
+            const originalColor = answerBox.getAttribute('color');
+            answerBox.setAttribute('color', '#F44336'); // Rouge
+            
+            setTimeout(() => {
+                answerBox.setAttribute('color', originalColor);
+            }, 1000);
+            
             this.playSFX('incorrect');
+            const phrase = this.getRandomPhrase('incorrect').replace('{name}', this.playerName);
+            this.kenziSpeak(phrase);
         }
-        
-        if (this.answeredQuestions.size === this.questions.length) {
-            setTimeout(() => this.showVictory(), 1000);
+    }
+    
+    spawnCelebration(position, marker) {
+        // Confettis simples (Sphères colorées qui explosent)
+        const colors = ['#FFD93D', '#FF6B9D', '#6BCF7F', '#4D96FF'];
+        for(let i=0; i<20; i++) {
+            const confetti = document.createElement('a-sphere');
+            confetti.setAttribute('radius', '0.05');
+            confetti.setAttribute('color', colors[Math.floor(Math.random() * colors.length)]);
+            confetti.setAttribute('position', position);
+            
+            const destX = (Math.random() - 0.5) * 2;
+            const destY = (Math.random() - 0.5) * 2 + 1;
+            const destZ = (Math.random() - 0.5) * 2;
+            
+            confetti.setAttribute('animation', {
+                property: 'position',
+                to: `${destX} ${destY} ${destZ}`,
+                dur: 1000,
+                easing: 'easeOutQuad'
+            });
+            
+            confetti.setAttribute('animation__fade', {
+                property: 'opacity',
+                to: '0',
+                dur: 1000,
+                easing: 'linear'
+            });
+            
+            marker.appendChild(confetti);
+            setTimeout(() => { if(confetti.parentNode) confetti.parentNode.removeChild(confetti); }, 1000);
         }
     }
 
-    showInstructions() {
-        console.log('📋 Instructions affichées');
-        const overlay = document.getElementById('instructions-overlay');
-        if (overlay) {
-            overlay.classList.remove('hidden');
-            
-            // Fermer les instructions au clic du bouton
-            const startScanningBtn = document.getElementById('start-scanning');
-            if (startScanningBtn) {
-                startScanningBtn.onclick = () => {
-                    overlay.classList.add('hidden');
-                };
-            }
-        }
+    getRandomPhrase(type) {
+        const phrases = this.kenziPhrases[type];
+        return phrases[Math.floor(Math.random() * phrases.length)];
     }
-    
-    showVictory() {
-        console.log('🎊 VICTOIRE!');
-        this.kenziSpeak(`مبروك ${this.playerName}! لقد أنهيت اللعبة! نقاطك: ${this.score}`);
-        const overlay = document.getElementById('celebration-overlay');
-        if (overlay) {
-            overlay.classList.remove('hidden');
-            const finalScore = overlay.querySelector('#final-score');
-            if (finalScore) {
-                finalScore.textContent = this.score;
-            }
-        }
-        this.createConfetti();
+
+    showVictoryScreen() {
         this.playSFX('victory');
-    }
-    
-    createConfetti() {
-        console.log('🎉 Confettis!');
-        // Confetti simple avec CSS
-        const confettiContainer = document.createElement('div');
-        confettiContainer.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-        `;
+        const phrase = this.getRandomPhrase('complete').replace('{name}', this.playerName);
+        this.kenziSpeak(phrase);
         
-        for (let i = 0; i < 50; i++) {
-            const confetti = document.createElement('div');
-            confetti.style.cssText = `
-                position: absolute;
-                width: 10px;
-                height: 10px;
-                background: hsl(${Math.random() * 360}, 100%, 50%);
-                top: -10%;
-                left: ${Math.random() * 100}%;
-                animation: fall ${Math.random() * 3 + 2}s linear forwards;
-                border-radius: 50%;
-            `;
-            confettiContainer.appendChild(confetti);
-        }
-        
-        document.body.appendChild(confettiContainer);
-        setTimeout(() => confettiContainer.remove(), 5000);
+        // Afficher un overlay de victoire simple si nécessaire, ou juste Kenzi qui célèbre
+        alert(`🎉 Mabrouk ${this.playerName} ! Tu as gagné ! Score: ${this.score}`);
     }
-    
+
     playSFX(type) {
-        console.log('🔊 Son:', type);
-        // Sons simples avec Web Audio API
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
         
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+        const playTone = (freq, type, duration, delay=0, vol=0.2) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            const now = ctx.currentTime + delay;
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(vol, now + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            osc.start(now);
+            osc.stop(now + duration + 0.1);
+        };
         
         if (type === 'correct') {
-            oscillator.frequency.value = 523.25; // C5
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.5);
-        } else if (type === 'incorrect') {
-            oscillator.frequency.value = 200;
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.3);
-        } else if (type === 'victory') {
-            oscillator.frequency.value = 659.25; // E5
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 1);
-        } else if (type === 'appear') {
-            // Son magique d'apparition (glissando montant)
-            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
-            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.3);
+            playTone(523.25, 'sine', 0.6, 0);   // C5
+            playTone(659.25, 'sine', 0.6, 0.1); // E5
+            playTone(783.99, 'sine', 0.8, 0.2); // G5
+        } 
+        else if (type === 'incorrect') {
+            playTone(150, 'sawtooth', 0.4, 0, 0.15);
+            playTone(145, 'sawtooth', 0.4, 0.05, 0.15);
+        } 
+        else if (type === 'victory') {
+            playTone(523.25, 'square', 0.2, 0, 0.1);
+            playTone(523.25, 'square', 0.2, 0.15, 0.1);
+            playTone(523.25, 'square', 0.2, 0.3, 0.1);
+            playTone(783.99, 'square', 1.0, 0.45, 0.1);
+        } 
+        else if (type === 'appear') {
+            // "Sexy" Pop / Ding Sound
+            // 1. Un "Ding" brillant (Onde sinus haute fréquence)
+            playTone(880, 'sine', 0.8, 0, 0.15); // A5
+            playTone(1760, 'sine', 0.6, 0.05, 0.05); // A6 (harmonique)
+            
+            // 2. Un "Pop" percussif (Bruit court et décroissant rapide)
+            playTone(200, 'triangle', 0.1, 0, 0.3);
+            
+            // 3. Petit effet "glissando" rapide vers le haut
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            const now = ctx.currentTime;
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(1200, now + 0.2);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.2);
+            osc.start(now);
+            osc.stop(now + 0.2);
+        }
+        else if (type === 'click') {
+            // Son de clic sec et satisfaisant (bruit blanc ou click court)
+            playTone(800, 'sine', 0.05, 0, 0.3); // "Blip" très court
+            playTone(1200, 'triangle', 0.02, 0, 0.2); // Attaque aigue
         }
     }
 

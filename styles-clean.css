@@ -261,12 +261,12 @@
         display: none !important;
     }
     
-    /* Instructions pour tablette */
+    /* Instructions pour tablette - CORRECTION LARGEUR */
     .instructions-box {
-        max-width: 900px;
-        width: 98%;
-        margin: 2rem auto;
-        padding: 2.5rem;
+        max-width: none !important;
+        width: 96% !important;
+        margin: 1rem auto !important;
+        padding: 1.5rem !important;
     }
     
     .instruction-step {
@@ -294,8 +294,8 @@
     }
 }
 
-}
-    /* Page d'accueil pour desktop */
+/* Page d'accueil pour desktop */
+@media (min-width: 1025px) {
     #welcome-screen .container {
         max-width: 700px;
         padding: 3rem;
@@ -1533,15 +1533,14 @@ body.game-active #ar-container {
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
+    width: 100% !important;
+    height: 100% !important;
     background: linear-gradient(135deg, rgba(255, 107, 157, 0.95) 0%, rgba(77, 150, 255, 0.95) 100%);
     z-index: 2000;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
-    overflow-y: auto;
+    padding: 0.5rem !important; /* Réduit le padding pour laisser plus de place */
     margin: 0 !important;
 }
 
@@ -1549,15 +1548,25 @@ body.game-active #ar-container {
     display: none !important;
 }
 
+.instructions-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+}
+
 .instructions-box {
     background: white;
-    border-radius: 30px;
-    padding: 1.5rem;
-    max-width: 900px;
-    width: 98%;
-    border: 5px solid #FFD93D;
+    border-radius: 20px;
+    padding: 1.2rem;
+    max-width: 98vw !important; /* Force la largeur */
+    width: 98vw !important;     /* Force la largeur */
+    margin: 0 auto !important;
+    border: 4px solid #FFD93D;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 0 10px rgba(255, 255, 255, 0.5);
-    max-height: 80vh;
+    max-height: 90vh;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
@@ -2349,3 +2358,74 @@ body.game-active #ar-container {
 /* ============================================
    FIN DU FICHIER
    ============================================ */
+
+/* ============================================
+   19. CRITICAL FIXES (Camera & Overlay)
+   ============================================ */
+html, body {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Force la caméra en plein écran absolu */
+#ar-container, 
+#ar-container a-scene, 
+#ar-container video, 
+#ar-container canvas {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    object-fit: cover !important;
+    z-index: 0 !important; /* Arrière-plan */
+}
+
+/* S'assurer que le canvas A-Frame est bien dimensionné */
+.a-canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Force les instructions au premier plan */
+.instructions-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 9999 !important; /* Très haut dessus de la caméra */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(0,0,0,0.5) !important; /* Fond semi-transparent pour visibilité */
+}
+
+/* Si hidden est présent, on cache */
+.instructions-overlay.hidden {
+    display: none !important;
+}
+
+/* Force la boîte d'instructions à être visible et centrée */
+.instructions-box {
+    position: relative !important;
+    z-index: 10000 !important;
+    background: white !important;
+    width: 90% !important; /* Largeur sûre sur tablette */
+    max-width: 600px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    border: 4px solid #FFD93D !important;
+    border-radius: 20px !important;
+    padding: 1.5rem !important;
+    margin: auto !important;
+    display: block !important;
+}
+
