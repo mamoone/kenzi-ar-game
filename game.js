@@ -56,6 +56,122 @@ class TreasureHuntGame {
         this.setupWelcomeScreen();
         this.setupGameScreen();
         this.loadDefaultQuestions();
+        this.setupSmartClick(); // Activation du Smart Click
+    }
+
+    setupSmartClick() {
+        // "Smart Click" : Système de clic tolérant pour corriger les offsets AR.js
+        console.log('🧠 Smart Click initialisé');
+        
+        window.addEventListener('touchstart', (e) => {
+            // On convertit le touch en clic pour l'analyse
+            const touch = e.touches[0];
+            this.handleSmartClick(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+        window.addEventListener('click', (e) => {
+            this.handleSmartClick(e.clientX, e.clientY);
+        });
+    }
+
+    handleSmartClick(clientX, clientY) {
+        // 1. Si on a déjà une interaction en cours via le Raycaster natif, on laisse faire
+        // (A-Frame gère le clic natif avant nous souvent, mais pas toujours en AR)
+        
+        // 2. Si aucune question n'est active, rien à faire
+        if (!this.currentQuestion) return;
+
+        // 3. Recherche du bouton le plus proche en espace écran (Screen Space)
+        const scene = document.querySelector('a-scene');
+        if (!scene || !scene.camera) return;
+        
+        const camera = scene.camera;
+        let bestCandidate = null;
+        let minDist = Infinity;
+        const PIXEL_THRESHOLD = 80; // ~2cm de marge d'erreur (généreux)
+
+        // On cherche parmi les réponses de la question ACTUELLE seulement
+        const questionId = this.currentQuestion.markerId;
+        // On cible les HITBOXES (qui ont la classe .clickable)
+        // Les hitboxes sont les enfants des visualBox
+        const answers = [];
+        for(let i=0; i<4; i++) {
+            // Le sélecteur doit trouver la hitbox. La hitbox est un enfant ajouté dynamiquement.
+            // On peut passer par le visualBox
+            const visualBox = document.querySelector(`.answer-${questionId}-${i}`);
+            if (visualBox) {
+                const hitbox = visualBox.querySelector('.clickable');
+                if (hitbox) answers.push(hitbox);
+            }
+        }
+
+        answers.forEach(el => {
+            const obj = el.object3D;
+            if (!obj) return;
+
+            // Position monde
+            const pos = new THREE.Vector3();
+            obj.getWorldPosition(pos);
+            
+            // Projection écran
+            pos.project(camera); // NDC [-1, 1]
+            
+            // Si l'objet est derrière la caméra, on ignore
+            if (pos.z > 1) return;
+
+            // Conversion pixels
+            const x = (pos.x * .5 + .5) * window.innerWidth;
+            const y = (-(pos.y * .5) + .5) * window.innerHeight;
+
+            // Distance
+            const dx = clientX - x;
+            const dy = clientY - y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+
+            if (dist < minDist) {
+                minDist = dist;
+                bestCandidate = el;
+            }
+        });
+
+        // 4. Si on a trouvé un candidat proche, on simule le clic
+        if (bestCandidate && minDist < PIXEL_THRESHOLD) {
+            console.log(`🧠 Smart Click: Cible trouvée à ${Math.round(minDist)}px !`);
+            
+            // On vérifie si ce n'est pas déjà géré par le clic natif (évite double validation)
+            // On utilise un flag ou un petit timeout lock
+            if (this._clickLock) return;
+            this._clickLock = true;
+            setTimeout(() => this._clickLock = false, 500);
+
+            // On déclenche l'événement click sur la hitbox
+            bestCandidate.dispatchEvent(new Event('click', { bubbles: true }));
+            
+            // Feedback visuel de debug (optionnel, utile pour vérifier l'alignement)
+            this.showClickFeedback(clientX, clientY);
+        }
+    }
+
+    showClickFeedback(x, y) {
+        const feedback = document.createElement('div');
+        feedback.style.position = 'fixed';
+        feedback.style.left = (x - 10) + 'px';
+        feedback.style.top = (y - 10) + 'px';
+        feedback.style.width = '20px';
+        feedback.style.height = '20px';
+        feedback.style.border = '2px solid rgba(255, 255, 0, 0.8)';
+        feedback.style.borderRadius = '50%';
+        feedback.style.pointerEvents = 'none';
+        feedback.style.zIndex = '9999';
+        feedback.style.transition = 'all 0.5s ease-out';
+        document.body.appendChild(feedback);
+        
+        requestAnimationFrame(() => {
+            feedback.style.transform = 'scale(2)';
+            feedback.style.opacity = '0';
+        });
+        
+        setTimeout(() => feedback.remove(), 500);
     }
 
     loadQuestions() {
@@ -491,8 +607,14 @@ class TreasureHuntGame {
             const contentEntity = marker.querySelector('a-entity');
             if (contentEntity) {
                 // 1. Mise à jour DYNAMIQUE de la question (Fix bug image manquante)
-                // On cherche le premier a-box qui est le panneau question
-                const questionBox = contentEntity.querySelector('a-box:not(.clickable)'); 
+                // On utilise la classe spécifique ajoutée dans le HTML
+                let questionBox = contentEntity.querySelector('.question-box');
+                
+                // Fallback si la classe n'est pas trouvée (pour compatibilité)
+                if (!questionBox) {
+                     questionBox = contentEntity.querySelector('a-box:not(.clickable)'); 
+                }
+
                 if (questionBox) {
                     const texture = this.generateQuestionSVG(question.question);
                     questionBox.setAttribute('src', texture);
