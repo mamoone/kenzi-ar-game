@@ -298,18 +298,8 @@ class TreasureHuntGame {
                 video.style.bottom = '0';
                 video.style.width = '100vw';
                 video.style.height = '100vh';
-                video.style.minWidth = '100vw';
-                video.style.minHeight = '100vh';
-                video.style.maxWidth = '100vw';
-                video.style.maxHeight = '100vh';
-                video.style.margin = '0';
-                video.style.marginLeft = '0';
-                video.style.marginTop = '0';
-                video.style.marginRight = '0';
-                video.style.marginBottom = '0';
-                video.style.padding = '0';
-                video.style.transform = 'none';
-                video.style.objectFit = 'cover';
+                // ... (autres styles)
+                video.style.objectFit = 'fill'; // CRITIQUE: 'fill' garantit l'alignement 1:1 Clic/Vidéo (pas de crop)
             });
             
             // Forcer tous les canvas
@@ -320,9 +310,16 @@ class TreasureHuntGame {
                 c.style.width = '100vw';
                 c.style.height = '100vh';
                 c.style.margin = '0';
-                c.style.marginLeft = '0';
-                c.style.marginTop = '0';
                 c.style.transform = 'none';
+                
+                // RESTAURATION DU FIX RAYCASTER (Sync Resolution)
+                // Indispensable pour aligner le clic avec la vidéo étirée
+                if (c.width !== window.innerWidth || c.height !== window.innerHeight) {
+                    const sceneEl = document.querySelector('a-scene');
+                    if (sceneEl && sceneEl.renderer) {
+                        sceneEl.renderer.setSize(window.innerWidth, window.innerHeight, false);
+                    }
+                }
             });
         };
         
@@ -383,35 +380,54 @@ class TreasureHuntGame {
                 
                 // Event listeners pour les réponses
                 question.answers.forEach((answer, index) => {
-                    const answerBox = document.querySelector(`.answer-${question.markerId}-${index}`);
-                    if (answerBox) {
+                    // Le bouton visuel (défini dans le HTML)
+                    const visualBox = document.querySelector(`.answer-${question.markerId}-${index}`);
+                    
+                    if (visualBox) {
+                        // 1. Configuration Visuelle
                         const texture = this.generateAnswerSVG(answer);
-                        answerBox.setAttribute('src', texture);
-                        answerBox.setAttribute('color', 'white');
+                        visualBox.setAttribute('src', texture);
+                        visualBox.setAttribute('color', 'white');
                         
-                        // Assurer que l'objet est cliquable
-                        answerBox.classList.add('clickable');
+                        // IMPORTANT : On retire la classe clickable du visuel pour éviter les conflits
+                        visualBox.classList.remove('clickable');
                         
-                        answerBox.addEventListener('click', (evt) => {
-                            console.log('🖱️ Réponse cliquée:', answer);
-                            this.playClickSound(); // Feedback sonore immédiat
+                        // 2. Création de la "Hitbox Fantôme" (Zone de clic agrandie et avancée)
+                        // Correction Parallaxe : Profondeur REDUITE pour éviter les occlusions en vue de biais
+                        const hitbox = document.createElement('a-box');
+                        hitbox.setAttribute('width', '3.0');  // Largeur maintenue
+                        hitbox.setAttribute('height', '0.45'); // Hauteur stricte (pas de chevauchement Y)
+                        hitbox.setAttribute('depth', '0.1');  // Profondeur FINE (Correction décalage)
+                        hitbox.setAttribute('material', 'opacity: 0; transparent: true'); 
+                        hitbox.setAttribute('position', '0 0 0.05'); // Juste devant le visuel
+                        hitbox.classList.add('clickable'); 
+                        
+                        // Ajouter la hitbox comme ENFANT du bouton visuel
+                        visualBox.appendChild(hitbox);
+                        
+                        // 3. Gestion du Clic sur la Hitbox
+                        hitbox.addEventListener('click', (evt) => {
+                            // On arrête la propagation pour éviter les doubles clics
+                            evt.stopPropagation();
                             
-                            // Animation de clic "Press" (Pression stable)
-                            if (evt.target) {
-                                // Reset échelle originale (au cas où)
-                                evt.target.setAttribute('scale', '1 1 1');
-                                
-                                // Effet de pression rapide
-                                evt.target.setAttribute('animation__click', {
-                                    property: 'scale',
-                                    to: '0.9 0.9 0.9', // Rétrécit légèrement
-                                    dur: 100,
-                                    easing: 'easeOutQuad',
-                                    dir: 'alternate',
-                                    loop: 1
-                                });
-                            }
-                            this.checkAnswer(answer, question, answerBox);
+                            console.log('🖱️ Réponse cliquée (via Hitbox):', answer);
+                            this.playClickSound();
+                            
+                            // Animation sur le bouton VISUEL (le parent de la hitbox)
+                            // Reset échelle
+                            visualBox.setAttribute('scale', '1 1 1');
+                            
+                            // Effet de pression
+                            visualBox.setAttribute('animation__click', {
+                                property: 'scale',
+                                to: '0.9 0.9 0.9',
+                                dur: 100,
+                                easing: 'easeOutQuad',
+                                dir: 'alternate',
+                                loop: 1
+                            });
+                            
+                            this.checkAnswer(answer, question, visualBox);
                         });
                     }
                 });
@@ -450,8 +466,23 @@ class TreasureHuntGame {
         return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
     }
 
+    generateQuestionSVG(text) {
+        // Design "Panneau Question" (Fond Bleu Kenzi)
+        const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="800" height="200" viewBox="0 0 800 200">
+            <rect width="800" height="200" fill="#4D96FF" rx="20" ry="20"/>
+            <text x="400" y="100" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">${text}</text>
+        </svg>`;
+        return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
+    }
+
     onMarkerFound(question) {
         console.log('🎯 Marqueur détecté:', question.markerId);
+        
+        // Cacher l'indice de recherche s'il est visible
+        const hint = document.getElementById('marker-hint');
+        if (hint) hint.classList.add('hidden');
+
         this.playSFX('appear');
         
         const marker = document.getElementById(`marker-${question.markerId}`);
@@ -459,6 +490,16 @@ class TreasureHuntGame {
             // Animation "Pop-in" Stable et Claire
             const contentEntity = marker.querySelector('a-entity');
             if (contentEntity) {
+                // 1. Mise à jour DYNAMIQUE de la question (Fix bug image manquante)
+                // On cherche le premier a-box qui est le panneau question
+                const questionBox = contentEntity.querySelector('a-box:not(.clickable)'); 
+                if (questionBox) {
+                    const texture = this.generateQuestionSVG(question.question);
+                    questionBox.setAttribute('src', texture);
+                    questionBox.setAttribute('color', 'white'); // Reset couleur
+                    questionBox.setAttribute('material', 'shader: flat; opacity: 1'); // Force visibilité
+                }
+
                 // Reset propre
                 contentEntity.setAttribute('scale', '0 0 0');
                 contentEntity.setAttribute('rotation', '-90 0 0'); // Rotation fixe, face caméra
@@ -470,6 +511,11 @@ class TreasureHuntGame {
                     dur: 600, // Plus rapide
                     easing: 'easeOutBack' // Plus sec, moins "gelée"
                 });
+                
+                // Failsafe : Forcer l'affichage si l'animation bug
+                setTimeout(() => {
+                    contentEntity.setAttribute('scale', '2.5 2.5 2.5');
+                }, 650);
                 
                 // Suppression de l'animation de Tilt pour la stabilité de lecture
                 contentEntity.removeAttribute('animation__tilt');
@@ -602,6 +648,12 @@ class TreasureHuntGame {
             // Vérifier victoire
             if (this.answeredQuestions.size === this.questions.length) {
                 setTimeout(() => this.showVictoryScreen(), 2000);
+            } else {
+                // Guidance pour la prochaine question après un court délai
+                setTimeout(() => {
+                    this.showNextMarkerHint();
+                    this.kenziSpeak("ممتاز! ابحث عن العلامة التالية!");
+                }, 2500);
             }
         } else {
             // Mauvaise réponse
@@ -648,6 +700,22 @@ class TreasureHuntGame {
             
             marker.appendChild(confetti);
             setTimeout(() => { if(confetti.parentNode) confetti.parentNode.removeChild(confetti); }, 1000);
+        }
+    }
+
+    showNextMarkerHint() {
+        const hint = document.getElementById('marker-hint');
+        if (hint) {
+            hint.classList.remove('hidden');
+            // Animation d'entrée
+            hint.style.animation = 'none';
+            hint.offsetHeight; /* trigger reflow */
+            hint.style.animation = 'bounce 2s ease-in-out infinite';
+            
+            // Masquer automatiquement après 8 secondes
+            setTimeout(() => {
+                hint.classList.add('hidden');
+            }, 8000);
         }
     }
 

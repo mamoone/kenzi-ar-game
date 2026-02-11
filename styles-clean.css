@@ -1651,6 +1651,7 @@ body.game-active #ar-container {
     z-index: 150 !important;
     animation: bounce 2s ease-in-out infinite !important;
     margin: 0 !important;
+    pointer-events: none !important;
 }
 
 .hint-content {

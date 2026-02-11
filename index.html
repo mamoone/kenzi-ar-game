@@ -97,7 +97,7 @@
                     <a-light type="point" intensity="0.8" position="0 2 2"></a-light>
                     
                     <!-- Panneau Question (Plus haut) -->
-                    <a-box src="#q0-img" position="0 1.5 0" width="2.5" height="0.8" depth="0.1" 
+                    <a-box class="question-box" position="0 1.5 0" width="2.5" height="0.8" depth="0.1" 
                            material="shader: flat; color: white">
                            <!-- Ombre portée simulée -->
                            <a-plane position="0 -0.45 -0.05" width="2.4" height="0.1" color="#000" opacity="0.2" rotation="-90 0 0"></a-plane>
@@ -118,7 +118,7 @@
                 <a-entity position="0 0 0" rotation="-90 0 0" scale="2.5 2.5 2.5">
                      <a-light type="point" intensity="0.8" position="0 2 2"></a-light>
                     
-                    <a-box src="#q1-img" position="0 1.5 0" width="2.5" height="0.8" depth="0.1" 
+                    <a-box class="question-box" position="0 1.5 0" width="2.5" height="0.8" depth="0.1" 
                            material="shader: flat; color: white">
                     </a-box>
                     
@@ -136,7 +136,7 @@
                 <a-entity position="0 0 0" rotation="-90 0 0" scale="2.5 2.5 2.5">
                      <a-light type="point" intensity="0.8" position="0 2 2"></a-light>
                     
-                    <a-box src="#q2-img" position="0 1.5 0" width="2.5" height="0.8" depth="0.1" 
+                    <a-box class="question-box" position="0 1.5 0" width="2.5" height="0.8" depth="0.1" 
                            material="shader: flat; color: white">
                     </a-box>
                     
@@ -154,7 +154,7 @@
                 <a-entity position="0 0 0" rotation="-90 0 0" scale="2.5 2.5 2.5">
                      <a-light type="point" intensity="0.8" position="0 2 2"></a-light>
                     
-                    <a-box src="#q3-img" position="0 1.5 0" width="2.5" height="0.8" depth="0.1" 
+                    <a-box class="question-box" position="0 1.5 0" width="2.5" height="0.8" depth="0.1" 
                            material="shader: flat; color: white">
                     </a-box>
                     
@@ -265,6 +265,15 @@
                 <div class="kenzi-celebrate">🦊</div>
                 <div class="confetti"></div>
                 <h2 id="celebration-text"></h2>
+            </div>
+        </div>
+
+        <!-- Indice pour la prochaine question (Guidance) -->
+        <div id="marker-hint" class="marker-hint hidden">
+            <div class="hint-content">
+                <div class="hint-icon">🔍</div>
+                <p>ابحث عن العلامة التالية!</p>
+                <div class="hint-arrow">⬇️</div>
             </div>
         </div>
 
