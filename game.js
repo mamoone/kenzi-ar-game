@@ -434,6 +434,48 @@ class TreasureHuntGame {
         this.questions.forEach(question => {
             const marker = document.getElementById(`marker-${question.markerId}`);
             if (marker) {
+                // AJOUT DECORATIONS FORET (Dynamique)
+                const contentEntity = marker.querySelector('a-entity');
+                if (contentEntity) {
+                    // Création d'un groupe pour les décors (au sol)
+                    const decorGroup = document.createElement('a-entity');
+                    decorGroup.setAttribute('position', '0 0 -0.5'); // Un peu en arrière
+                    decorGroup.setAttribute('rotation', '-90 0 0'); // A plat sur le marker
+                    
+                    // Fonction pour créer une fleur/buisson simple (Low Poly style via primitives)
+                    const createBush = (x, y, color, scale) => {
+                        const bush = document.createElement('a-dodecahedron');
+                        bush.setAttribute('color', color);
+                        bush.setAttribute('radius', '0.3');
+                        bush.setAttribute('position', `${x} ${y} 0`); // Z=0 car rotation -90
+                        bush.setAttribute('scale', `${scale} ${scale} ${scale}`);
+                        bush.setAttribute('material', 'shader: flat');
+                        return bush;
+                    };
+
+                    // Ajouter quelques buissons autour
+                    decorGroup.appendChild(createBush(-1.8, 0.5, '#4CAF50', 1.2)); // Gauche
+                    decorGroup.appendChild(createBush(1.8, 0.5, '#66BB6A', 1.0));  // Droite
+                    decorGroup.appendChild(createBush(-1.5, -1.5, '#81C784', 0.8)); // Bas Gauche
+                    decorGroup.appendChild(createBush(1.5, -1.5, '#43A047', 0.9));  // Bas Droite
+                    
+                    // Ajouter des fleurs (Sphères colorées)
+                    const createFlower = (x, y, color) => {
+                        const flower = document.createElement('a-sphere');
+                        flower.setAttribute('color', color);
+                        flower.setAttribute('radius', '0.1');
+                        flower.setAttribute('position', `${x} ${y} 0.2`); // Un peu plus haut
+                        flower.setAttribute('material', 'shader: flat');
+                        return flower;
+                    };
+                    
+                    decorGroup.appendChild(createFlower(-1.8, 0.6, '#FFEB3B'));
+                    decorGroup.appendChild(createFlower(1.8, 0.4, '#FF4081'));
+                    decorGroup.appendChild(createFlower(-1.4, -1.4, '#E040FB'));
+
+                    contentEntity.appendChild(decorGroup);
+                }
+
                 // Event listeners pour markerFound/Lost
                 marker.addEventListener('markerFound', () => {
                     this.onMarkerFound(question);
@@ -503,18 +545,56 @@ class TreasureHuntGame {
     }
 
     generateAnswerSVG(text) {
-        // Design "Bouton 3D" plus marqué
+        // Design "Bouton Bois 3D" (Wooden Plank)
         const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="512" height="128" viewBox="0 0 512 128">
             <defs>
-                <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#FFF59D;stop-opacity:1" />
-                    <stop offset="50%" style="stop-color:#FFD54F;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#FFB300;stop-opacity:1" />
+                <linearGradient id="woodBtn" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#A1887F;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#8D6E63;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#6D4C41;stop-opacity:1" />
                 </linearGradient>
-                <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
-                    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
-                    <feOffset dx="0" dy="4" result="offsetblur"/>
+                <filter id="shadowBtn" x="-5%" y="-5%" width="110%" height="110%">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+                    <feOffset dx="0" dy="3" result="offsetblur"/>
+                    <feMerge>
+                        <feMergeNode/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Planche -->
+            <rect x="10" y="10" width="492" height="108" rx="15" ry="15" fill="url(#woodBtn)" stroke="#4E342E" stroke-width="4" filter="url(#shadowBtn)"/>
+            
+            <!-- Vis -->
+            <circle cx="30" cy="64" r="5" fill="#B0BEC5" stroke="#546E7A" stroke-width="1"/>
+            <circle cx="482" cy="64" r="5" fill="#B0BEC5" stroke="#546E7A" stroke-width="1"/>
+            
+            <!-- Texte -->
+            <text x="256" y="70" font-family="Arial, sans-serif" font-size="50" font-weight="900" fill="white" stroke="#3E2723" stroke-width="1.5" text-anchor="middle" dominant-baseline="middle" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">${text}</text>
+        </svg>`;
+        return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
+    }
+
+    generateQuestionSVG(text) {
+        // Design "Panneau Forêt 3D" (Wooden Sign in Forest)
+        // Cadre en bois + Feuilles décoratives
+        const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="800" height="250" viewBox="0 0 800 250">
+            <defs>
+                <linearGradient id="woodGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#8D6E63;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#6D4C41;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#4E342E;stop-opacity:1" />
+                </linearGradient>
+                <filter id="woodGrain">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="3" stitchTiles="stitch"/>
+                    <feColorMatrix type="saturate" values="0.2"/>
+                    <feBlend mode="multiply" in="SourceGraphic"/>
+                </filter>
+                <filter id="shadow3d" x="-5%" y="-5%" width="110%" height="110%">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+                    <feOffset dx="0" dy="8" result="offsetblur"/>
                     <feComponentTransfer>
                         <feFuncA type="linear" slope="0.5"/>
                     </feComponentTransfer>
@@ -524,19 +604,22 @@ class TreasureHuntGame {
                     </feMerge>
                 </filter>
             </defs>
-            <rect width="500" height="116" x="6" y="6" rx="30" ry="30" fill="url(#grad1)" stroke="#F57F17" stroke-width="6" filter="url(#shadow)"/>
-            <text x="256" y="80" font-family="Arial, sans-serif" font-size="60" font-weight="900" fill="rgba(0,0,0,0.15)" text-anchor="middle" dominant-baseline="middle">${text}</text>
-            <text x="253" y="77" font-family="Arial, sans-serif" font-size="60" font-weight="900" fill="#3E2723" text-anchor="middle" dominant-baseline="middle">${text}</text>
-        </svg>`;
-        return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
-    }
-
-    generateQuestionSVG(text) {
-        // Design "Panneau Question" (Fond Bleu Kenzi)
-        const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="800" height="200" viewBox="0 0 800 200">
-            <rect width="800" height="200" fill="#4D96FF" rx="20" ry="20"/>
-            <text x="400" y="100" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">${text}</text>
+            
+            <!-- Planche en bois principale -->
+            <rect x="20" y="20" width="760" height="210" rx="15" ry="15" fill="url(#woodGradient)" stroke="#3E2723" stroke-width="8" filter="url(#shadow3d)"/>
+            
+            <!-- Clous aux coins -->
+            <circle cx="50" cy="50" r="8" fill="#B0BEC5" stroke="#546E7A" stroke-width="2"/>
+            <circle cx="750" cy="50" r="8" fill="#B0BEC5" stroke="#546E7A" stroke-width="2"/>
+            <circle cx="50" cy="200" r="8" fill="#B0BEC5" stroke="#546E7A" stroke-width="2"/>
+            <circle cx="750" cy="200" r="8" fill="#B0BEC5" stroke="#546E7A" stroke-width="2"/>
+            
+            <!-- Feuilles décoratives (Coins) -->
+            <path d="M20,20 Q-10,-10 20,-40 Q50,-10 20,20" fill="#66BB6A" stroke="#2E7D32" stroke-width="2" transform="translate(0,0)"/>
+            <path d="M780,20 Q810,-10 780,-40 Q750,-10 780,20" fill="#66BB6A" stroke="#2E7D32" stroke-width="2" transform="translate(0,0)"/>
+            
+            <!-- Texte Question (Blanc avec contour sombre pour lisibilité sur bois) -->
+            <text x="400" y="135" font-family="Arial, sans-serif" font-size="45" font-weight="900" fill="white" stroke="#3E2723" stroke-width="2" text-anchor="middle" dominant-baseline="middle" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5); direction: rtl; unicode-bidi: embed;">${text}</text>
         </svg>`;
         return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
     }
@@ -578,15 +661,16 @@ class TreasureHuntGame {
                 // Animation principale : Scale Up propre (sans rebond excessif)
                 contentEntity.setAttribute('animation__popin', {
                     property: 'scale',
-                    to: '2.5 2.5 2.5',
-                    dur: 600, // Plus rapide
-                    easing: 'easeOutBack' // Plus sec, moins "gelée"
+                    to: '2.5 2.5 2.5', // Echelle finale
+                    dur: 800,
+                    easing: 'easeOutElastic', // Elastic pour effet "Pop" ludique
+                    elasticity: 400
                 });
                 
                 // Failsafe : Forcer l'affichage si l'animation bug
                 setTimeout(() => {
                     contentEntity.setAttribute('scale', '2.5 2.5 2.5');
-                }, 650);
+                }, 850);
                 
                 // Suppression de l'animation de Tilt pour la stabilité de lecture
                 contentEntity.removeAttribute('animation__tilt');

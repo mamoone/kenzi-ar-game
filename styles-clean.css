@@ -2364,44 +2364,53 @@ body.game-active #ar-container {
    21. START SCANNING BUTTON & UI UPDATES
    ============================================ */
 
+.instructions-box {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center; /* Center children horizontally */
+}
+
 .btn-start-scanning {
-    display: block;
-    width: 100%;
-    max-width: 350px;
-    margin: 2rem auto 1rem; /* Center horizontally with margin */
-    padding: 1.2rem 2rem;
-    font-size: 1.5rem;
+    display: inline-block; /* Changed from block to inline-block for better centering control in flex */
+    width: auto;
+    min-width: 250px;
+    max-width: 90%;
+    margin: 1.5rem auto 0; /* Auto margins */
+    padding: 1rem 2rem;
+    font-size: 1.6rem;
     font-weight: 900;
-    color: white;
-    background: linear-gradient(45deg, #FFD93D, #FF6B9D);
-    border: 4px solid white;
+    color: #FFF;
+    background: linear-gradient(to bottom, #FFD93D, #FFC107);
+    border: 4px solid #FFF;
     border-radius: 50px;
     cursor: pointer;
     box-shadow: 
-        0 10px 0 #FF6B9D, 
+        0 8px 0 #FFA000, 
         0 15px 20px rgba(0,0,0,0.2),
         inset 0 2px 0 rgba(255,255,255,0.5);
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    transition: all 0.1s ease-in-out;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.15);
     position: relative;
     overflow: hidden;
     animation: pulseBtn 2s infinite;
+    text-align: center;
+    z-index: 2001;
 }
 
 .btn-start-scanning:hover {
-    transform: translateY(-5px) scale(1.02);
+    transform: translateY(-2px);
     box-shadow: 
-        0 15px 0 #FF6B9D, 
+        0 10px 0 #FFA000, 
         0 20px 30px rgba(0,0,0,0.3),
         inset 0 2px 0 rgba(255,255,255,0.5);
-    background: linear-gradient(45deg, #FF6B9D, #FFD93D);
+    background: linear-gradient(to bottom, #FFC107, #FFB300);
 }
 
 .btn-start-scanning:active {
-    transform: translateY(5px);
+    transform: translateY(6px);
     box-shadow: 
-        0 0 0 #FF6B9D, 
-        0 0 0 rgba(0,0,0,0.2),
+        0 2px 0 #FFA000, 
+        0 5px 10px rgba(0,0,0,0.2),
         inset 0 2px 0 rgba(255,255,255,0.5);
 }
 
@@ -2411,48 +2420,79 @@ body.game-active #ar-container {
     100% { transform: scale(1); }
 }
 
-/* Redesigned Score Panel - 3D Kids Style */
+/* Redesigned Score Panel - Sexy 3D Kids Style */
 #game-ui {
-    background: rgba(255, 255, 255, 0.9);
-    border-bottom: 5px solid #4D96FF;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-    backdrop-filter: blur(10px);
+    background: transparent; /* Remove flat background */
+    box-shadow: none;
+    border: none;
+    padding: 10px;
 }
 
 #score-toggle {
-    background: #FFD93D;
-    border: none;
-    border-bottom: 4px solid #FBC02D;
-    color: #5D4037;
-    text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
+    background: linear-gradient(to bottom, #FF6B9D, #FF4081);
+    border: 3px solid #FFF;
+    border-radius: 30px;
+    box-shadow: 0 5px 0 #C2185B, 0 10px 10px rgba(0,0,0,0.2);
+    color: white;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+#score-toggle:active {
+    transform: translateY(5px);
+    box-shadow: 0 0 0 #C2185B;
+}
+
+.toggle-text {
+    color: white;
+    font-weight: 900;
+    font-size: 1.2rem;
+}
+
+.toggle-arrow {
+    color: white;
+    font-weight: 900;
+}
+
+#score-panel-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    margin-top: 10px;
+    border: 4px solid #FFD93D;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
 .score-item {
-    font-family: 'Baloo 2', cursive; /* Assuming font availability or fallback */
-    font-size: 1.2rem;
-    text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+    font-family: 'Baloo 2', cursive, sans-serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
     box-shadow: 
-        0 4px 0 rgba(0,0,0,0.1), 
-        inset 0 2px 0 rgba(255,255,255,0.4);
-    border: 3px solid white;
+        inset 0 -4px 0 rgba(0,0,0,0.1),
+        0 5px 10px rgba(0,0,0,0.1);
+    border: 3px solid #FFF;
+    border-radius: 15px;
+    transform: perspective(500px) rotateX(5deg);
 }
 
 #player-name {
-    background: linear-gradient(135deg, #FFD93D, #FFAB91);
+    background: linear-gradient(135deg, #FFD93D, #FFC107);
     color: #5D4037;
-    border-color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 #score {
-    background: linear-gradient(135deg, #6BCF7F, #4DB6AC);
+    background: linear-gradient(135deg, #6BCF7F, #43A047);
     color: white;
-    text-shadow: 1px 1px 0 #00695C;
 }
 
 #progress {
-    background: linear-gradient(135deg, #4D96FF, #64B5F6);
+    background: linear-gradient(135deg, #4D96FF, #1E88E5);
     color: white;
-    text-shadow: 1px 1px 0 #0D47A1;
 }
 
 /* Return UI Button Styles */
