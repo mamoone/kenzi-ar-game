@@ -52,11 +52,10 @@ class TreasureHuntGame {
     }
 
     init() {
-        this.loadQuestions();
         this.setupWelcomeScreen();
         this.setupGameScreen();
-        this.loadDefaultQuestions();
-        this.setupSmartClick(); // Activation du Smart Click
+        this.loadQuestionsFromJSON();
+        this.setupSmartClick(); 
     }
 
     setupSmartClick() {
@@ -174,55 +173,37 @@ class TreasureHuntGame {
         setTimeout(() => feedback.remove(), 500);
     }
 
-    loadQuestions() {
-        const stored = localStorage.getItem('treasureHuntQuestions');
-        if (stored) {
-            this.questions = JSON.parse(stored);
-        }
-    }
-
-    loadDefaultQuestions() {
-        // Forcer les questions arabes - écraser localStorage
-        this.questions = [
-            {
-                id: Date.now() + 1,
-                markerId: 0,
-                type: 'qcm',
-                question: 'كم يساوي 5 + 3 ؟',
-                answers: ['6', '7', '8', '9'],
-                correctAnswer: '8',
-                points: 10
-            },
-            {
-                id: Date.now() + 2,
-                markerId: 1,
-                type: 'qcm',
-                question: 'ما هي عاصمة المغرب؟',
-                answers: ['الرباط', 'الدار البيضاء', 'فاس', 'مراكش'],
-                correctAnswer: 'الرباط',
-                points: 10
-            },
-            {
-                id: Date.now() + 3,
-                markerId: 2,
-                type: 'qcm',
-                question: 'كم يساوي 12 - 7 ؟',
-                answers: ['3', '4', '5', '6'],
-                correctAnswer: '5',
-                points: 10
-            },
-            {
-                id: Date.now() + 4,
-                markerId: 3,
-                type: 'qcm',
-                question: 'ما هو الحيوان الذي يقول مواء؟',
-                answers: ['كلب', 'قطة', 'عصفور', 'فأر'],
-                correctAnswer: 'قطة',
-                points: 10
+    async loadQuestionsFromJSON() {
+        console.log('📂 Chargement des questions depuis questions.json...');
+        try {
+            const response = await fetch('questions.json');
+            if (!response.ok) throw new Error('Fichier JSON introuvable');
+            
+            const data = await response.json();
+            this.questions = data;
+            
+            // Sauvegarde pour le prochain démarrage (cache)
+            localStorage.setItem('treasureHuntQuestions', JSON.stringify(this.questions));
+            console.log('✅ Questions chargées avec succès:', this.questions.length);
+            
+        } catch (error) {
+            console.warn('⚠️ Impossible de charger questions.json (Assurez-vous d\'utiliser un serveur web local).', error);
+            console.log('🔄 Utilisation des questions en cache ou par défaut.');
+            
+            // Fallback : On essaie le cache, sinon on met des questions par défaut
+            const stored = localStorage.getItem('treasureHuntQuestions');
+            if (stored) {
+                this.questions = JSON.parse(stored);
+            } else {
+                // Questions de secours si tout échoue
+                this.questions = [
+                    { id: 1, markerId: 0, type: 'qcm', question: '5 + 3 ?', answers: ['8', '9', '6', '7'], correctAnswer: '8', points: 10 },
+                    { id: 2, markerId: 1, type: 'qcm', question: 'Capitale du Maroc?', answers: ['Rabat', 'Casa', 'Fes', 'Tanger'], correctAnswer: 'Rabat', points: 10 },
+                    { id: 3, markerId: 2, type: 'qcm', question: '12 - 7 ?', answers: ['5', '6', '4', '3'], correctAnswer: '5', points: 10 },
+                    { id: 4, markerId: 3, type: 'qcm', question: 'Qui dit Miaou?', answers: ['Chat', 'Chien', 'Oiseau', 'Souris'], correctAnswer: 'Chat', points: 10 }
+                ];
             }
-        ];
-        localStorage.setItem('treasureHuntQuestions', JSON.stringify(this.questions));
-        console.log('✅ Questions arabes chargées:', this.questions.map(q => q.question));
+        }
     }
 
     setupWelcomeScreen() {
@@ -320,38 +301,6 @@ class TreasureHuntGame {
             this.initAR();
             this.forceVideoFullscreen();
         }, 500);
-    }
-    
-    showInstructions() {
-        const overlay = document.getElementById('instructions-overlay');
-        if (overlay) {
-            overlay.classList.remove('hidden');
-            // S'assurer que l'overlay est bien au-dessus
-            overlay.style.display = 'flex';
-            
-            const startBtn = document.getElementById('start-scanning');
-            if (startBtn) {
-                // Cloner pour supprimer les anciens listeners
-                const newBtn = startBtn.cloneNode(true);
-                startBtn.parentNode.replaceChild(newBtn, startBtn);
-                
-                newBtn.addEventListener('click', () => {
-                    overlay.classList.add('hidden');
-                    overlay.style.display = 'none';
-                    this.kenziSpeak('ابحث عن العلامات الآن!');
-                    
-                    // Re-forcer le plein écran vidéo au cas où
-                    this.forceVideoFullscreen();
-                    
-                    // Démarrer la musique de fond si nécessaire (interaction utilisateur requise)
-                    if (!this.backgroundMusicPlaying && this.audioContext) {
-                        this.audioContext.resume();
-                    }
-                });
-            }
-        } else {
-            console.error('❌ Instructions overlay non trouvé!');
-        }
     }
 
     showInstructions() {
@@ -851,8 +800,54 @@ class TreasureHuntGame {
         const phrase = this.getRandomPhrase('complete').replace('{name}', this.playerName);
         this.kenziSpeak(phrase);
         
-        // Afficher un overlay de victoire simple si nécessaire, ou juste Kenzi qui célèbre
-        alert(`🎉 Mabrouk ${this.playerName} ! Tu as gagné ! Score: ${this.score}`);
+        // Afficher l'overlay de victoire
+        const overlay = document.getElementById('celebration-overlay');
+        const textEl = document.getElementById('celebration-text');
+        const scoreEl = document.getElementById('final-score');
+        const returnBtn = document.getElementById('return-home-btn');
+        
+        if (overlay && textEl) {
+            textEl.textContent = `🎉 مبروك ${this.playerName} ! لقد فزت!`;
+            if (scoreEl) scoreEl.textContent = `النقاط: ${this.score}`;
+            
+            overlay.classList.remove('hidden');
+            overlay.style.display = 'flex';
+            
+            // Animation Confettis
+            this.startConfetti();
+            
+            // Gestion du bouton retour
+            if (returnBtn) {
+                returnBtn.onclick = () => {
+                   window.location.reload();
+                };
+            }
+        } else {
+             alert(`🎉 Mabrouk ${this.playerName} ! Tu as gagné ! Score: ${this.score}`);
+             window.location.reload();
+        }
+    }
+
+    startConfetti() {
+        // Simple confetti effect using DOM elements if not already present
+        // Or rely on the existing CSS confetti
+        const confettiContainer = document.querySelector('.confetti');
+        if (confettiContainer) {
+            confettiContainer.innerHTML = '';
+            const colors = ['#FFD93D', '#FF6B9D', '#6BCF7F', '#4D96FF'];
+            for (let i = 0; i < 50; i++) {
+                const conf = document.createElement('div');
+                conf.style.position = 'absolute';
+                conf.style.width = '10px';
+                conf.style.height = '10px';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.top = -10 + 'px';
+                conf.style.animation = `confettiFall ${2 + Math.random() * 3}s linear infinite`;
+                conf.style.animationDelay = Math.random() * 2 + 's';
+                confettiContainer.appendChild(conf);
+            }
+        }
     }
 
     playSFX(type) {
