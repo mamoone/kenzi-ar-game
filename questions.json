@@ -3,36 +3,27 @@
         "id": "q1",
         "markerId": 0,
         "type": "qcm",
-        "question": "كم يساوي 5 + 3 ؟",
-        "answers": ["35", "7", "8", "9"],
-        "correctAnswer": "8",
+        "question": "كم يساوي 132 + 233 ؟",
+        "answers": ["365", "327", "823", "465"],
+        "correctAnswer": "365",
         "points": 10
     },
     {
         "id": "q2",
         "markerId": 1,
         "type": "qcm",
-        "question": "ما هي عاصمة المغرب؟",
-        "answers": ["الرباط", "الدار البيضاء", "فاس", "مراكش"],
-        "correctAnswer": "الرباط",
+        "question": "كم يساوي 24 - 56 ؟",
+        "answers": ["33", "32", "36", "34"],
+        "correctAnswer": "32",
         "points": 10
     },
     {
         "id": "q3",
         "markerId": 2,
         "type": "qcm",
-        "question": "كم يساوي 12 - 7 ؟",
-        "answers": ["3", "4", "5", "6"],
-        "correctAnswer": "5",
-        "points": 10
-    },
-    {
-        "id": "q4",
-        "markerId": 3,
-        "type": "qcm",
-        "question": "ما هو الحيوان الذي يقول مواء؟",
-        "answers": ["كلب", "قطة", "عصفور", "فأر"],
-        "correctAnswer": "قطة",
+        "question": "كم يساوي 5x5 ؟",
+        "answers": ["35", "24", "25", "26"],
+        "correctAnswer": "25",
         "points": 10
     }
 ]
